@@ -1,0 +1,48 @@
+"use strict";
+
+var canvas, ctx;
+
+function init(width, height) {
+  canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  document.body.appendChild(canvas);
+
+  ctx = canvas.getContext("2d");
+}
+
+function drawRectangle(x, y, width, height, color) {
+  ctx.fillStyle = color;
+  ctx.fillRect(x, y, width, height);
+}
+
+function draw(renderables) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  renderables.forEach(function(r) {
+    switch (r.kind) {
+      case "rectangle":
+        drawRectangle(r.x, r.y, r.width, r.height, r.color);
+        break;
+      default:
+        console.warn("draw(): unknown renderable");
+        break;
+    }
+  });
+}
+
+app.ports.canvas.subscribe(function(data) {
+  let name = data.name;
+  let args = data.args;
+
+  switch (name) {
+    case "init":
+      init(args.width, args.height);
+      break;
+    case "draw":
+      draw(args.renderables);
+      break;
+    default:
+      console.warn("canvas subscription: unknown command");
+      break;
+  }
+});
