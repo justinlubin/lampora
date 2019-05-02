@@ -4,19 +4,26 @@ module Controller exposing
   , subscriptions
   )
 
+import Browser.Events
+
 import Model exposing (Model)
 import Renderable exposing (Renderable)
 import Canvas
 
 type Msg
-  = Draw (List Renderable)
+  = Draw Float
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    Draw rs ->
-      (model, Canvas.send (Canvas.Draw rs))
+    Draw delta ->
+      ( model
+      , Canvas.send <|
+          Canvas.Draw
+            delta
+            (Model.renderables model)
+      )
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-  Sub.none
+  Browser.Events.onAnimationFrameDelta Draw

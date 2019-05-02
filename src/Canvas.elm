@@ -12,7 +12,7 @@ port canvas : E.Value -> Cmd msg
 
 type Msg
   = Init
-  | Draw (List Renderable)
+  | Draw Float (List Renderable)
 
 send : Msg -> Cmd msg
 send canvasMsg =
@@ -26,9 +26,12 @@ send canvasMsg =
             ]
           )
 
-        Draw renderables ->
+        Draw delta renderables ->
           ( "draw"
-          , [ ( "renderables"
+          , [ ( "delta"
+              , E.float delta
+              )
+            , ( "renderables"
               , E.list Renderable.encode renderables
               )
             ]
