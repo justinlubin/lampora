@@ -1,9 +1,14 @@
 module Params exposing (..)
 
-gameWidth : Int
-gameWidth =
+tileSize : Int
+tileSize =
+  32
+
+
+canvasWidth : Int
+canvasWidth =
   600
 
-gameHeight : Int
-gameHeight =
+canvasHeight : Int
+canvasHeight =
   600

@@ -21,8 +21,8 @@ send canvasMsg =
       case canvasMsg of
         Init ->
           ( "init"
-          , [ ("width", E.int Params.gameWidth)
-            , ("height", E.int Params.gameHeight)
+          , [ ("width", E.int Params.canvasWidth)
+            , ("height", E.int Params.canvasHeight)
             ]
           )
 
