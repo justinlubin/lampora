@@ -6,6 +6,7 @@ module TileMap exposing
 
 import Array exposing (Array)
 
+import Params
 import Renderable exposing (Renderable(..))
 
 type Tile
@@ -51,10 +52,10 @@ renderTile row col t =
           "red"
   in
     Rectangle
-      { x = 32 * col
-      , y = 32 * row
-      , width = 32
-      , height = 32
+      { x = Params.tileSize * col
+      , y = Params.tileSize * row
+      , width = Params.tileSize
+      , height = Params.tileSize
       , color = color
       }
 

@@ -24,7 +24,9 @@ type alias Flags =
 
 init : Flags -> (Model, Cmd Msg)
 init _ =
-  ( { tileMap =
+  ( { player =
+        { x = 12, y = 12 }
+    , tileMap =
         TileMap.fromList startLevel
     }
   , Canvas.send Canvas.Init

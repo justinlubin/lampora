@@ -18,7 +18,8 @@ function drawRectangle(x, y, width, height, color) {
 
 function draw(renderables) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  renderables.forEach(function(r) {
+  for (let i = renderables.length - 1; i >= 0; i--) {
+    let r = renderables[i];
     switch (r.kind) {
       case "rectangle":
         drawRectangle(r.x, r.y, r.width, r.height, r.color);
@@ -27,7 +28,7 @@ function draw(renderables) {
         console.warn("draw(): unknown renderable");
         break;
     }
-  });
+  }
 }
 
 app.ports.canvas.subscribe(function(data) {

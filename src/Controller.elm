@@ -5,13 +5,16 @@ module Controller exposing
   )
 
 import Browser.Events
+import Time
 
+import Params
 import Model exposing (Model)
 import Renderable exposing (Renderable)
 import Canvas
 
 type Msg
   = Draw Float
+  | StepPhysics Time.Posix
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -24,6 +27,14 @@ update msg model =
             (Model.renderables model)
       )
 
+    StepPhysics time ->
+      ( model
+      , Cmd.none
+      )
+
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-  Browser.Events.onAnimationFrameDelta Draw
+  Sub.batch
+    [ Browser.Events.onAnimationFrameDelta Draw
+    , Time.every Params.fixedDelta StepPhysics
+    ]
