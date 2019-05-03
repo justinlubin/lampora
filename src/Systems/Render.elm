@@ -60,5 +60,5 @@ system =
     in
       { world
           | renderables =
-              tilemapRenderables ++ entityRenderables
+              entityRenderables ++ tilemapRenderables
       }

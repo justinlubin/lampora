@@ -10,6 +10,8 @@ import Params
 import Draw.Canvas as Canvas
 import Tilemap
 import Systems.Render as Render
+import Entities
+import World
 
 startLevel : List (List Int)
 startLevel =
@@ -30,7 +32,7 @@ init : Flags -> (Model, Cmd Msg)
 init _ =
   ( { world =
         { uid =
-            0
+            World.initUId
         , renderables =
             []
         , fixedSystems =
@@ -44,7 +46,7 @@ init _ =
             Dict.empty
         , tilemap =
             Tilemap.fromList startLevel
-        }
+        } |> World.createEntity Entities.player
     , unsimulatedTime =
         0
     , fixedTimestep =
