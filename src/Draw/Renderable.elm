@@ -7,10 +7,10 @@ import Json.Encode as E
 
 type Renderable
   = Rectangle
-      { x : Int
-      , y : Int
-      , width : Int
-      , height : Int
+      { x : Float
+      , y : Float
+      , width : Float
+      , height : Float
       , color : String
       }
 
@@ -20,9 +20,9 @@ encode renderable =
     Rectangle { x, y, width, height, color } ->
       E.object
         [ ("kind", E.string "rectangle")
-        , ("x", E.int x)
-        , ("y", E.int y)
-        , ("width", E.int width)
-        , ("height", E.int height)
+        , ("x", E.float x)
+        , ("y", E.float y)
+        , ("width", E.float width)
+        , ("height", E.float height)
         , ("color", E.string color)
         ]

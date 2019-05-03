@@ -18,4 +18,4 @@ canvasHeight =
 
 gravity : Float
 gravity =
-  120
+  120 * 16

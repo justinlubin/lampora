@@ -17,10 +17,10 @@ system =
       renderEntity : Appearance -> BoundingBox -> Renderable
       renderEntity appearance boundingBox =
         Rectangle
-          { x = round boundingBox.x
-          , y = round boundingBox.y
-          , width = round boundingBox.width
-          , height = round boundingBox.height
+          { x = boundingBox.x
+          , y = boundingBox.y
+          , width = boundingBox.width
+          , height = boundingBox.height
           , color = appearance.color
           }
 
@@ -39,10 +39,10 @@ system =
                 "red"
         in
           Rectangle
-            { x = Params.tileSize * col
-            , y = Params.tileSize * row
-            , width = Params.tileSize
-            , height = Params.tileSize
+            { x = toFloat <| Params.tileSize * col
+            , y = toFloat <| Params.tileSize * row
+            , width = toFloat <| Params.tileSize
+            , height = toFloat <| Params.tileSize
             , color = color
             }
 

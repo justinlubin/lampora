@@ -25,7 +25,7 @@ player eid world =
       , physics =
           Dict.insert
             eid
-            { velocity = { x = 0, y = 0 }
+            { velocity = { x = 15 * 16, y = 0 }
             , acceleration = { x = 0, y = 0 }
             , grounded = False
             , walkSpeed = 15
