@@ -3,11 +3,9 @@ module View exposing
   )
 
 import Html exposing (Html)
-import Html.Events as Events
 
 import Model exposing (Model)
-import Controller exposing (Msg(..))
-import Renderable exposing (Renderable(..))
+import Controller exposing (Msg)
 
 view : Model -> Html Msg
 view model =

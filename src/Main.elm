@@ -1,11 +1,15 @@
 module Main exposing (main)
 
 import Browser
+import Dict
+
 import Model exposing (Model)
 import View
 import Controller exposing (Msg)
-import Canvas
-import TileMap
+import Params
+import Draw.Canvas as Canvas
+import Tilemap
+import Systems.Render as Render
 
 startLevel : List (List Int)
 startLevel =
@@ -24,10 +28,27 @@ type alias Flags =
 
 init : Flags -> (Model, Cmd Msg)
 init _ =
-  ( { player =
-        { x = 12, y = 12 }
-    , tileMap =
-        TileMap.fromList startLevel
+  ( { world =
+        { uid =
+            0
+        , renderables =
+            []
+        , fixedSystems =
+            []
+        , dynamicSystems =
+            [ Render.system
+            ]
+        , appearances =
+            Dict.empty
+        , boundingBoxes =
+            Dict.empty
+        , tilemap =
+            Tilemap.fromList startLevel
+        }
+    , unsimulatedTime =
+        0
+    , fixedTimestep =
+        Params.fixedDelta
     }
   , Canvas.send Canvas.Init
   )

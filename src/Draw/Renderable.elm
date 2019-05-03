@@ -1,4 +1,4 @@
-module Renderable exposing
+module Draw.Renderable exposing
   ( Renderable(..)
   , encode
   )
