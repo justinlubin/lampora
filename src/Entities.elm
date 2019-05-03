@@ -8,18 +8,28 @@ import World exposing (World, EntityId)
 player : EntityId -> World -> World
 player eid world =
   { world
-      | appearances =
+      | appearance =
           Dict.insert
             eid
             { color = "red" }
-            world.appearances
-      , boundingBoxes =
+            world.appearance
+      , boundingBox =
           Dict.insert
             eid
             { x = 20
             , y = 20
-            , width = Params.tileSize
-            , height = Params.tileSize
+            , width = toFloat Params.tileSize
+            , height = toFloat Params.tileSize
             }
-            world.boundingBoxes
+            world.boundingBox
+      , physics =
+          Dict.insert
+            eid
+            { velocity = { x = 0, y = 0 }
+            , acceleration = { x = 0, y = 0 }
+            , grounded = False
+            , walkSpeed = 15
+            , jumpSpeed = 30
+            }
+            world.physics
   }

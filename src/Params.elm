@@ -15,3 +15,7 @@ canvasWidth =
 canvasHeight : Int
 canvasHeight =
   600
+
+gravity : Float
+gravity =
+  120

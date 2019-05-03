@@ -10,6 +10,8 @@ import Params
 import Draw.Canvas as Canvas
 import Tilemap
 import Systems.Render as Render
+import Systems.Movement as Movement
+import Systems.Gravity as Gravity
 import Entities
 import World
 
@@ -36,13 +38,17 @@ init _ =
         , renderables =
             []
         , fixedSystems =
-            []
+            [ Gravity.system
+            , Movement.system
+            ]
         , dynamicSystems =
             [ Render.system
             ]
-        , appearances =
+        , appearance =
             Dict.empty
-        , boundingBoxes =
+        , boundingBox =
+            Dict.empty
+        , physics =
             Dict.empty
         , tilemap =
             Tilemap.fromList startLevel

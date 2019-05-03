@@ -38,8 +38,10 @@ type alias World =
   , fixedSystems : List FixedSystem
   , dynamicSystems : List DynamicSystem
 
-  , appearances : Dict EntityId Appearance
-  , boundingBoxes : Dict EntityId BoundingBox
+  -- Remember to update destroyEntity!
+  , appearance : Dict EntityId Appearance
+  , boundingBox : Dict EntityId BoundingBox
+  , physics : Dict EntityId Physics
 
   , tilemap : Tilemap
   }
@@ -61,10 +63,12 @@ destroyEntity e world =
       Dict.remove e
   in
     { world
-        | appearances =
-            destroyIn world.appearances
-        , boundingBoxes =
-            destroyIn world.boundingBoxes
+        | appearance =
+            destroyIn world.appearance
+        , boundingBox =
+            destroyIn world.boundingBox
+        , physics =
+            destroyIn world.physics
     }
 
 foldl : (EntityId -> a -> acc -> acc) -> acc -> Dict EntityId a -> acc

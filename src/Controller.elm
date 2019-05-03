@@ -5,6 +5,7 @@ module Controller exposing
   )
 
 import Browser.Events
+import Time
 
 import Params
 import Model exposing (Model)
@@ -16,19 +17,29 @@ type Msg
 
 updateFixed : Float -> Model -> Model
 updateFixed delta model =
-  if model.unsimulatedTime >= model.fixedTimestep then
-    updateFixed
-      (model.unsimulatedTime - model.fixedTimestep)
+  let
+    simulate m =
+      if m.unsimulatedTime >= m.fixedTimestep then
+        simulate
+          { m
+              | world =
+                  List.foldl
+                    (System.runFixed (m.fixedTimestep / 1000))
+                    m.world
+                    m.world.fixedSystems
+              , unsimulatedTime =
+                  m.unsimulatedTime - m.fixedTimestep
+          }
+
+      else
+        m
+  in
+    simulate
       { model
-          | world =
-              List.foldl
-                (System.runFixed model.fixedTimestep)
-                model.world
-                model.world.fixedSystems
+          | unsimulatedTime =
+              model.unsimulatedTime + delta
       }
 
-  else
-    model
 
 updateDynamic : Model -> Model
 updateDynamic model =
@@ -60,5 +71,6 @@ update msg model =
 subscriptions : Model -> Sub Msg
 subscriptions _ =
   Sub.batch
-    [ Browser.Events.onAnimationFrameDelta Tick
+    [ -- Time.every 1000 (always (Tick 10))
+      Browser.Events.onAnimationFrameDelta Tick
     ]

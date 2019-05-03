@@ -17,10 +17,10 @@ system =
       renderEntity : Appearance -> BoundingBox -> Renderable
       renderEntity appearance boundingBox =
         Rectangle
-          { x = boundingBox.x
-          , y = boundingBox.y
-          , width = boundingBox.width
-          , height = boundingBox.height
+          { x = round boundingBox.x
+          , y = round boundingBox.y
+          , width = round boundingBox.width
+          , height = round boundingBox.height
           , color = appearance.color
           }
 
@@ -48,12 +48,12 @@ system =
 
       entityRenderables =
         World.foldl2
-          ( \entity appearance boundingBox acc ->
+          ( \_ appearance boundingBox acc ->
               renderEntity appearance boundingBox :: acc
           )
           []
-          world.appearances
-          world.boundingBoxes
+          world.appearance
+          world.boundingBox
 
       tilemapRenderables =
         Tilemap.mapFlatten renderTile world.tilemap
