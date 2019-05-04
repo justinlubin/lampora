@@ -9,15 +9,15 @@ import Draw.Renderable exposing (Renderable)
 import Tilemap exposing (Tilemap)
 
 type alias World =
-    { renderables : List Renderable
+  { renderables : List Renderable
 
-    -- Remember to update destruct!
-    , appearance : ECS.Components Appearance
-    , boundingBox : ECS.Components BoundingBox
-    , physics : ECS.Components Physics
+  -- Remember to update destruct!
+  , appearance : ECS.Components Appearance
+  , boundingBox : ECS.Components BoundingBox
+  , physics : ECS.Components Physics
 
-    , tilemap : Tilemap
-    }
+  , tilemap : Tilemap
+  }
 
 destruct : ECS.EntityId -> World -> World
 destruct eid world =
