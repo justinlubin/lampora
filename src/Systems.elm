@@ -3,11 +3,13 @@ module Systems exposing
   , Axis(..)
   , movement
   , tilemapCollision
+  , input
 
   , render
   )
 
 import Utils
+import KeyManager
 import ECS
 import Params
 import Vector
@@ -25,8 +27,8 @@ gravity dt world=
   let
     newPhysics =
       ECS.map
-        ( \physics ->
-            { physics
+        ( \phys ->
+            { phys
                 | acceleration =
                     { x = 0, y = Params.gravity }
             }
@@ -176,11 +178,17 @@ tilemapCollision axis _ world =
     (newPhysics, newBoundingBox) =
       ECS.separate <|
         ECS.map
-          ( \pair ->
-              if collides world.tilemap pair then
-                correctCollision pair
-              else
-                pair
+          ( \(phys, bbox) ->
+              let
+                pair =
+                  ( { phys | grounded = False }
+                  , bbox
+                  )
+              in
+                if collides world.tilemap pair then
+                  correctCollision pair
+                else
+                  pair
           )
           ( ECS.combine
               world.physics
@@ -193,6 +201,53 @@ tilemapCollision axis _ world =
         , boundingBox =
             newBoundingBox
     }
+
+input : ECS.FixedSystem World
+input _ world =
+  let
+    (_, newPhysics) =
+      ECS.separate <|
+        ECS.map
+          ( \(uc, phys) ->
+              let
+                rightVel =
+                  if KeyManager.isDown Params.keyRight world.keyManager then
+                    phys.walkSpeed
+                  else
+                    0
+
+                leftVel =
+                  if KeyManager.isDown Params.keyLeft world.keyManager then
+                    -phys.walkSpeed
+                  else
+                    0
+
+                jumpVel =
+                  if
+                    phys.grounded
+                      && KeyManager.isDown Params.keyJump world.keyManager
+                  then
+                    -phys.jumpSpeed
+                  else
+                    phys.velocity.y
+
+                newVelocity =
+                  { x =
+                      rightVel + leftVel
+                  , y =
+                      jumpVel
+                  }
+              in
+                ( uc
+                , { phys | velocity = newVelocity }
+                )
+          )
+          ( ECS.combine
+              world.userControl
+              world.physics
+          )
+  in
+    { world | physics = newPhysics }
 
 --------------------------------------------------------------------------------
 -- Dynamic Systems

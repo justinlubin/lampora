@@ -2,6 +2,7 @@ module Components exposing
   ( Appearance
   , BoundingBox
   , Physics
+  , UserControl
   )
 
 import Vector exposing (Vector)
@@ -26,3 +27,6 @@ type alias Physics =
   , walkSpeed : Float
   , jumpSpeed : Float
   }
+
+type alias UserControl =
+  {}

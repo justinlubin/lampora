@@ -9,6 +9,8 @@ import Controller exposing (Msg)
 
 import Draw.Canvas as Canvas
 
+import KeyManager
+
 import ECS
 
 import Params
@@ -42,8 +44,12 @@ initWorld =
       ECS.empty
   , physics =
       ECS.empty
+  , userControl =
+      ECS.empty
   , tilemap =
       Tilemap.fromList startLevel
+  , keyManager =
+      KeyManager.empty
   }
 
 initGame : ECS.Game World
@@ -52,7 +58,7 @@ initGame =
       ECS.initUId
   , fixedSystems =
       [ Systems.gravity
-      -- , Systems.input
+      , Systems.input
       , Systems.movement Systems.Horizontal
       , Systems.tilemapCollision Systems.Horizontal
       , Systems.movement Systems.Vertical

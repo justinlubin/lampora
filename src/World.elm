@@ -3,6 +3,7 @@ module World exposing
   , destruct
   )
 
+import KeyManager exposing (KeyManager)
 import ECS
 import Components exposing (..)
 import Draw.Renderable exposing (Renderable)
@@ -15,8 +16,11 @@ type alias World =
   , appearance : ECS.Components Appearance
   , boundingBox : ECS.Components BoundingBox
   , physics : ECS.Components Physics
+  , userControl : ECS.Components UserControl
 
   , tilemap : Tilemap
+
+  , keyManager : KeyManager
   }
 
 destruct : ECS.EntityId -> World -> World
@@ -32,4 +36,6 @@ destruct eid world =
             destroyIn world.boundingBox
         , physics =
             destroyIn world.physics
+        , userControl =
+            destroyIn world.userControl
     }

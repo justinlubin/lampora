@@ -31,4 +31,8 @@ player eid world =
             , jumpSpeed = 30
             }
             world.physics
+      , userControl =
+          ECS.add eid
+            {}
+            world.userControl
   }
