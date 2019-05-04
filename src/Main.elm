@@ -6,14 +6,19 @@ import Dict
 import Model exposing (Model)
 import View
 import Controller exposing (Msg)
-import Params
+
 import Draw.Canvas as Canvas
+
+import ECS
+
+import Params
 import Tilemap
-import Systems.Render as Render
-import Systems.Movement as Movement
-import Systems.Gravity as Gravity
+import World exposing (World)
+import Systems
 import Entities
-import World
+
+type alias Flags =
+  ()
 
 startLevel : List (List Int)
 startLevel =
@@ -27,36 +32,43 @@ startLevel =
   , [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
   ]
 
-type alias Flags =
-  ()
+initWorld : World
+initWorld =
+  { renderables =
+      []
+  , appearance =
+      ECS.empty
+  , boundingBox =
+      ECS.empty
+  , physics =
+      ECS.empty
+  , tilemap =
+      Tilemap.fromList startLevel
+  }
+
+initGame : ECS.Game World
+initGame =
+  { uId =
+      ECS.initUId
+  , fixedSystems =
+      [ Systems.gravity
+      , Systems.movement
+      ]
+  , dynamicSystems =
+      [ Systems.render
+      ]
+  , unsimulatedTime =
+      0
+  , fixedTimestep =
+      Params.fixedTimestep
+  , world =
+      initWorld
+  } |> ECS.createEntity Entities.player
 
 init : Flags -> (Model, Cmd Msg)
 init _ =
-  ( { world =
-        { uid =
-            World.initUId
-        , renderables =
-            []
-        , fixedSystems =
-            [ Gravity.system
-            , Movement.system
-            ]
-        , dynamicSystems =
-            [ Render.system
-            ]
-        , appearance =
-            Dict.empty
-        , boundingBox =
-            Dict.empty
-        , physics =
-            Dict.empty
-        , tilemap =
-            Tilemap.fromList startLevel
-        } |> World.createEntity Entities.player
-    , unsimulatedTime =
-        0
-    , fixedTimestep =
-        Params.fixedDelta
+  ( { game =
+        initGame
     }
   , Canvas.send Canvas.Init
   )
@@ -64,8 +76,12 @@ init _ =
 main : Program Flags Model Msg
 main =
   Browser.element
-    { init = init
-    , view = View.view
-    , update = Controller.update
-    , subscriptions = Controller.subscriptions
+    { init =
+        init
+    , view =
+        View.view
+    , update =
+        Controller.update
+    , subscriptions =
+        Controller.subscriptions
     }

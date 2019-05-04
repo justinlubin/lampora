@@ -2,20 +2,20 @@ module Entities exposing (..)
 
 import Dict
 
+import Vector
 import Params
-import World exposing (World, EntityId)
+import ECS
+import World exposing (World)
 
-player : EntityId -> World -> World
+player : ECS.EntityId -> World -> World
 player eid world =
   { world
       | appearance =
-          Dict.insert
-            eid
+          ECS.add eid
             { color = "red" }
             world.appearance
       , boundingBox =
-          Dict.insert
-            eid
+          ECS.add eid
             { x = 20
             , y = 20
             , width = toFloat Params.tileSize
@@ -23,10 +23,9 @@ player eid world =
             }
             world.boundingBox
       , physics =
-          Dict.insert
-            eid
-            { velocity = { x = 15 * 16, y = 0 }
-            , acceleration = { x = 0, y = 0 }
+          ECS.add eid
+            { velocity = Vector.right (15 * 16)
+            , acceleration = Vector.zero
             , grounded = False
             , walkSpeed = 15
             , jumpSpeed = 30

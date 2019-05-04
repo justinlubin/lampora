@@ -1,8 +1,8 @@
 module Params exposing (..)
 
-fixedDelta : Float
-fixedDelta =
-  1000 / 60
+fixedTimestep : Float
+fixedTimestep =
+  1 / 60
 
 tileSize : Int
 tileSize =

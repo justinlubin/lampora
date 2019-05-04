@@ -1,8 +1,10 @@
 module Components exposing
-  ( ..
+  ( Appearance
+  , BoundingBox
+  , Physics
   )
 
-import Util exposing (..)
+import Vector exposing (Vector)
 
 type alias Appearance =
   { color : String
