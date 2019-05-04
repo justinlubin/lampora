@@ -3,11 +3,12 @@ module Tilemap exposing
   , Tile(..)
   , fromList
   , mapFlatten
+  , blocked
   )
 
 import Array exposing (Array)
 
-import Params
+import Vector exposing (Vector)
 
 type Tile
   = Dirt
@@ -52,3 +53,30 @@ mapFlatten f =
     >> Array.toList
     >> List.map (Array.toList)
     >> List.concat
+
+tileBlocked : Tile -> Bool
+tileBlocked t =
+  case t of
+    Dirt ->
+      True
+
+    Sky ->
+      False
+
+    Unknown ->
+      True
+
+blocked : Vector -> Tilemap -> Bool
+blocked { x, y } (TM rows) =
+  let
+    row =
+      floor y
+
+    col =
+      floor x
+  in
+    rows
+      |> Array.get row
+      |> Maybe.andThen (Array.get col)
+      |> Maybe.map (\t -> tileBlocked t)
+      |> Maybe.withDefault False

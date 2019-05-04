@@ -16,15 +16,15 @@ player eid world =
             world.appearance
       , boundingBox =
           ECS.add eid
-            { x = 20
-            , y = 20
-            , width = toFloat Params.tileSize
-            , height = toFloat Params.tileSize
+            { x = 1
+            , y = 1
+            , width = 1
+            , height = 1
             }
             world.boundingBox
       , physics =
           ECS.add eid
-            { velocity = Vector.right (15 * 16)
+            { velocity = Vector.zero
             , acceleration = Vector.zero
             , grounded = False
             , walkSpeed = 15

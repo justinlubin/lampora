@@ -52,7 +52,11 @@ initGame =
       ECS.initUId
   , fixedSystems =
       [ Systems.gravity
-      , Systems.movement
+      -- , Systems.input
+      , Systems.movement Systems.Horizontal
+      , Systems.tilemapCollision Systems.Horizontal
+      , Systems.movement Systems.Vertical
+      , Systems.tilemapCollision Systems.Vertical
       ]
   , dynamicSystems =
       [ Systems.render
