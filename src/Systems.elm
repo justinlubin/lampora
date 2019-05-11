@@ -16,7 +16,7 @@ import Vector exposing (Vector)
 import World exposing (World)
 import Components exposing (..)
 import Draw.Renderable exposing (Renderable(..))
-import Tilemap exposing (Tilemap, Tile(..))
+import Tilemap exposing (Tilemap, Tile)
 
 --------------------------------------------------------------------------------
 -- Fixed Systems
@@ -330,25 +330,13 @@ render scale viewportWidth viewportHeight world =
 
     renderTile : Vector Int -> Tile -> Renderable
     renderTile { x, y } t =
-      let
-        color =
-          case t of
-            Dirt ->
-              "brown"
-
-            Sky ->
-              "skyblue"
-
-            Unknown ->
-              "red"
-      in
-        Rectangle
-          { x = (toFloat x - camera.xOffset) * unitLength
-          , y = (toFloat y - camera.yOffset) * unitLength
-          , width = unitLength
-          , height = unitLength
-          , color = color
-          }
+      Rectangle
+        { x = (toFloat x - camera.xOffset) * unitLength
+        , y = (toFloat y - camera.yOffset) * unitLength
+        , width = unitLength
+        , height = unitLength
+        , color = t.color
+        }
 
     tilemapRenderables : List Renderable
     tilemapRenderables =

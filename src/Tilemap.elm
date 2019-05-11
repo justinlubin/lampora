@@ -1,6 +1,6 @@
 module Tilemap exposing
   ( Tilemap
-  , Tile(..)
+  , Tile
   , fromList
   , mapFlatten
   , blocked
@@ -12,10 +12,53 @@ import Array exposing (Array)
 
 import Vector exposing (Vector)
 
-type Tile
-  = Dirt
-  | Sky
-  | Unknown
+type alias Tile =
+  { name : String
+  , blocked : Bool
+  , color : String
+  }
+
+sky : Tile
+sky =
+  { name = "Sky"
+  , blocked = False
+  , color = "#5DADE2"
+  }
+
+caveSky : Tile
+caveSky =
+  { name = "Cave Sky"
+  , blocked = False
+  , color = "#273746"
+  }
+
+dirt : Tile
+dirt =
+  { name = "Dirt"
+  , blocked = True
+  , color = "#6E2C00"
+  }
+
+grass : Tile
+grass =
+  { name = "Grass"
+  , blocked = True
+  , color = "#2ECC71"
+  }
+
+rock : Tile
+rock =
+  { name = "Rock"
+  , blocked = True
+  , color = "#5D6D7E"
+  }
+
+unknown : Tile
+unknown =
+  { name = "Unknown"
+  , blocked = True
+  , color = "magenta"
+  }
 
 type Tilemap =
   TM (Array (Array Tile))
@@ -33,14 +76,12 @@ fromList rows =
   let
     fromInt i =
       case i of
-        0 ->
-          Dirt
-
-        1 ->
-          Sky
-
-        _ ->
-          Unknown
+        0 -> sky
+        1 -> caveSky
+        2 -> dirt
+        3 -> grass
+        4 -> rock
+        _ -> unknown
   in
     rows
       |> List.map (List.map fromInt)
@@ -57,24 +98,12 @@ mapFlatten f =
     >> List.map (Array.toList)
     >> List.concat
 
-tileBlocked : Tile -> Bool
-tileBlocked t =
-  case t of
-    Dirt ->
-      True
-
-    Sky ->
-      False
-
-    Unknown ->
-      True
-
 blocked : Vector Int -> Tilemap -> Bool
 blocked { x, y } (TM rows) =
   rows
     |> Array.get y
     |> Maybe.andThen (Array.get x)
-    |> Maybe.map (\t -> tileBlocked t)
+    |> Maybe.map .blocked
     |> Maybe.withDefault False
 
 size : Tilemap -> Vector Int
