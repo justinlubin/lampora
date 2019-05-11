@@ -11,7 +11,7 @@ import Draw.Renderable as Renderable exposing (Renderable)
 port canvas : E.Value -> Cmd msg
 
 type Msg
-  = Init
+  = Init Int Int
   | Draw Float (List Renderable)
 
 send : Msg -> Cmd msg
@@ -19,10 +19,10 @@ send canvasMsg =
   let
     (name, args) =
       case canvasMsg of
-        Init ->
+        Init width height ->
           ( "init"
-          , [ ("width", E.int Params.canvasWidth)
-            , ("height", E.int Params.canvasHeight)
+          , [ ("width", E.int width)
+            , ("height", E.int height)
             ]
           )
 

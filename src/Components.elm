@@ -19,8 +19,8 @@ type alias BoundingBox =
   }
 
 type alias Physics =
-  { velocity : Vector
-  , acceleration : Vector
+  { velocity : Vector Float
+  , acceleration : Vector Float
 
   , grounded : Bool
 

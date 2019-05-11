@@ -13,7 +13,9 @@ function init(width, height) {
 
 function drawRectangle(x, y, width, height, color) {
   ctx.fillStyle = color;
-  ctx.fillRect(x, y, width, height);
+  ctx.fillRect(
+    Math.round(x), Math.round(y), Math.round(width), Math.round(height)
+  );
 }
 
 function draw(renderables) {

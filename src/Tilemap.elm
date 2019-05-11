@@ -4,6 +4,8 @@ module Tilemap exposing
   , fromList
   , mapFlatten
   , blocked
+  , size
+  , slice
   )
 
 import Array exposing (Array)
@@ -46,10 +48,11 @@ fromList rows =
       |> Array.fromList
       |> wrap
 
-mapFlatten : (Int -> Int -> Tile -> a) -> Tilemap -> List a
+mapFlatten : (Vector Int -> Tile -> a) -> Tilemap -> List a
 mapFlatten f =
   unwrap
-    >> Array.indexedMap (\row -> Array.indexedMap (f row))
+    >> Array.indexedMap
+         (\row -> Array.indexedMap (\col -> f { x = col, y = row }))
     >> Array.toList
     >> List.map (Array.toList)
     >> List.concat
@@ -66,17 +69,28 @@ tileBlocked t =
     Unknown ->
       True
 
-blocked : Vector -> Tilemap -> Bool
+blocked : Vector Int -> Tilemap -> Bool
 blocked { x, y } (TM rows) =
-  let
-    row =
-      floor y
+  rows
+    |> Array.get y
+    |> Maybe.andThen (Array.get x)
+    |> Maybe.map (\t -> tileBlocked t)
+    |> Maybe.withDefault False
 
-    col =
-      floor x
-  in
-    rows
-      |> Array.get row
-      |> Maybe.andThen (Array.get col)
-      |> Maybe.map (\t -> tileBlocked t)
-      |> Maybe.withDefault False
+size : Tilemap -> Vector Int
+size (TM rows) =
+  case Array.get 0 rows of
+    Just row ->
+      { x = Array.length row
+      , y = Array.length rows
+      }
+
+    Nothing ->
+      Vector.zero
+
+slice : Vector Int -> Vector Int -> Tilemap -> Tilemap
+slice start end (TM rows) =
+  rows
+    |> Array.slice start.y end.y
+    |> Array.map (Array.slice start.x end.x)
+    |> TM

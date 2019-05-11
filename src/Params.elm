@@ -6,19 +6,23 @@ fixedTimestep : Float
 fixedTimestep =
   1 / 60
 
-tileSize : Int
+tileSize : number
 tileSize =
-  32
+  16
 
-canvasWidth : Int
-canvasWidth =
-  600
+viewportWidth : number
+viewportWidth =
+  16
 
-canvasHeight : Int
-canvasHeight =
-  600
+viewportHeight : number
+viewportHeight =
+  16
 
-gravity : Float
+scale : number
+scale =
+  2
+
+gravity : number
 gravity =
   120
 

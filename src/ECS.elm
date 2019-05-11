@@ -4,6 +4,7 @@ module ECS exposing
   , empty
   , add
   , remove
+  , get
   , combine
   , separate
   , map
@@ -48,6 +49,10 @@ remove : EntityId -> Components a -> Components a
 remove eid (C dict) =
   C <|
     Dict.remove eid dict
+
+get : EntityId -> Components a -> Maybe a
+get eid (C dict) =
+  Dict.get eid dict
 
 combine : Components a -> Components b -> Components (a, b)
 combine (C dict1) (C dict2) =
@@ -132,21 +137,27 @@ type alias Game w =
   , world : w
   }
 
-createEntity : (EntityId -> world -> world) -> Game world -> Game world
+createEntity :
+  (EntityId -> world -> world) -> Game world -> (EntityId, Game world)
 createEntity construct game =
   let
     (UId n) =
       game.uId
 
+    newN =
+      n + 1
+
     newWorld =
-      construct (n + 1) game.world
+      construct newN game.world
   in
-    { game
-        | uId =
-            UId (n + 1)
-        , world =
-            newWorld
-    }
+    ( newN
+    , { game
+          | uId =
+              UId newN
+          , world =
+              newWorld
+      }
+    )
 
 destroyEntity :
   (EntityId -> world -> world) -> EntityId -> Game world -> Game world

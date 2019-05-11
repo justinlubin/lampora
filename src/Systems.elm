@@ -12,7 +12,7 @@ import Utils
 import KeyManager
 import ECS
 import Params
-import Vector
+import Vector exposing (Vector)
 import World exposing (World)
 import Components exposing (..)
 import Draw.Renderable exposing (Renderable(..))
@@ -109,14 +109,16 @@ tilemapCollision axis _ world =
                   False
                 else
                   Tilemap.blocked
-                    { x =
-                        if vel.x < 0 then
-                          bbox.x
-                        else -- vel.x > 0
-                          bbox.x + bbox.width
-                    , y =
-                        bbox.y + bbox.height * modifier
-                    }
+                    ( Vector.map floor
+                        { x =
+                            if vel.x < 0 then
+                              bbox.x
+                            else -- vel.x > 0
+                              bbox.x + bbox.width
+                        , y =
+                            bbox.y + bbox.height * modifier
+                        }
+                    )
                     world.tilemap
 
               Vertical ->
@@ -124,14 +126,16 @@ tilemapCollision axis _ world =
                   False
                 else
                   Tilemap.blocked
-                    { x =
-                        bbox.x + bbox.width * modifier
-                    , y =
-                        if vel.y < 0 then
-                          bbox.y
-                        else -- vel.y > 0
-                          bbox.y + bbox.height
-                    }
+                    ( Vector.map floor
+                        { x =
+                            bbox.x + bbox.width * modifier
+                        , y =
+                            if vel.y < 0 then
+                              bbox.y
+                            else -- vel.y > 0
+                              bbox.y + bbox.height
+                        }
+                    )
                     world.tilemap
 
     correctCollision : (Physics, BoundingBox) -> (Physics, BoundingBox)
@@ -253,21 +257,79 @@ input _ world =
 -- Dynamic Systems
 --------------------------------------------------------------------------------
 
-render : ECS.DynamicSystem World
-render world =
-  let
-    renderEntity : Appearance -> BoundingBox -> Renderable
-    renderEntity appearance boundingBox =
-      Rectangle
-        { x = boundingBox.x * toFloat Params.tileSize
-        , y = boundingBox.y * toFloat Params.tileSize
-        , width = boundingBox.width * toFloat Params.tileSize
-        , height = boundingBox.height * toFloat Params.tileSize
-        , color = appearance.color
-        }
+type alias Camera =
+  { xMin : Int
+  , yMin : Int
+  , xMax : Int
+  , yMax : Int
+  , xOffset : Float
+  , yOffset : Float
+  }
 
-    renderTile : Int -> Int -> Tile -> Renderable
-    renderTile row col t =
+worldCamera : Int -> Int -> World -> Camera
+worldCamera viewportWidth viewportHeight world =
+  let
+    size =
+      Tilemap.size world.tilemap
+
+    (x, y) =
+      case world.followedEntity of
+        Just eid ->
+          case ECS.get eid world.boundingBox of
+            Just bb ->
+              ( Utils.clamp
+                  (0, toFloat <| size.x - viewportWidth)
+                  (bb.x + bb.width / 2 - toFloat viewportWidth / 2)
+              , Utils.clamp
+                  (0, toFloat <| size.y - viewportHeight)
+                  (bb.y + bb.height / 2 - toFloat viewportHeight / 2)
+              )
+
+            Nothing ->
+              (0, 0)
+
+        Nothing ->
+          (0, 0)
+
+    xMin =
+      floor x
+
+    yMin =
+      floor y
+
+    xMax =
+      xMin + viewportWidth
+
+    yMax =
+      yMin + viewportHeight
+
+    xOffset =
+      x - toFloat xMin
+
+    yOffset =
+      y - toFloat yMin
+  in
+    { xMin = xMin
+    , yMin = yMin
+    , xMax = xMax
+    , yMax = yMax
+    , xOffset = xOffset
+    , yOffset = yOffset
+    }
+
+render : Float -> Int -> Int -> ECS.DynamicSystem World
+render scale viewportWidth viewportHeight world =
+  let
+    camera : Camera
+    camera =
+      worldCamera viewportWidth viewportHeight world
+
+    unitLength : Float
+    unitLength =
+      Params.tileSize * scale
+
+    renderTile : Vector Int -> Tile -> Renderable
+    renderTile { x, y } t =
       let
         color =
           case t of
@@ -275,19 +337,38 @@ render world =
               "brown"
 
             Sky ->
-              "blue"
+              "skyblue"
 
             Unknown ->
               "red"
       in
         Rectangle
-          { x = toFloat <| col * Params.tileSize
-          , y = toFloat <| row * Params.tileSize
-          , width = toFloat <| Params.tileSize
-          , height = toFloat <| Params.tileSize
+          { x = (toFloat x - camera.xOffset) * unitLength
+          , y = (toFloat y - camera.yOffset) * unitLength
+          , width = unitLength
+          , height = unitLength
           , color = color
           }
 
+    tilemapRenderables : List Renderable
+    tilemapRenderables =
+      world.tilemap
+        |> Tilemap.slice
+             { x = camera.xMin, y = camera.yMin }
+             { x = camera.xMax + 1, y = camera.yMax + 1 }
+        |> Tilemap.mapFlatten renderTile
+
+    renderEntity : Appearance -> BoundingBox -> Renderable
+    renderEntity a bb =
+      Rectangle
+        { x = (bb.x - toFloat camera.xMin - camera.xOffset) * unitLength
+        , y = (bb.y - toFloat camera.yMin - camera.yOffset) * unitLength
+        , width = bb.width * unitLength
+        , height = bb.height * unitLength
+        , color = a.color
+        }
+
+    entityRenderables : List Renderable
     entityRenderables =
       ECS.foldl
         ( \_ (appearance, boundingBox) acc ->
@@ -299,8 +380,6 @@ render world =
             world.boundingBox
         )
 
-    tilemapRenderables =
-      Tilemap.mapFlatten renderTile world.tilemap
   in
     { world
         | renderables =

@@ -2,13 +2,13 @@ module Entities exposing (..)
 
 import Dict
 
-import Vector
+import Vector exposing (Vector)
 import Params
 import ECS
 import World exposing (World)
 
-player : ECS.EntityId -> World -> World
-player eid world =
+player : Vector Float -> ECS.EntityId -> World -> World
+player pos eid world =
   { world
       | appearance =
           ECS.add eid
@@ -16,8 +16,8 @@ player eid world =
             world.appearance
       , boundingBox =
           ECS.add eid
-            { x = 1
-            , y = 1
+            { x = pos.x
+            , y = pos.y
             , width = 1
             , height = 1
             }
