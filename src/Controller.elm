@@ -18,6 +18,7 @@ type Msg
   = Tick Float -- in milliseconds!
   | KeyDown String
   | KeyUp String
+  | PlayClicked
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -88,11 +89,23 @@ update msg model =
         , Cmd.none
         )
 
+    PlayClicked ->
+      ( { model | playing = True }
+      , Canvas.send <|
+          Canvas.Init
+            (Params.viewportWidth * Params.tileSize * Params.scale)
+            (Params.viewportHeight * Params.tileSize * Params.scale)
+      )
+
 subscriptions : Model -> Sub Msg
-subscriptions _ =
-  Sub.batch
-    [ -- Time.every 1000 (always (Tick 10))
-      Browser.Events.onAnimationFrameDelta Tick
-    , Browser.Events.onKeyDown (D.map KeyDown <| D.field "key" D.string)
+subscriptions model =
+  Sub.batch <|
+    ( if model.playing then
+        [ Browser.Events.onAnimationFrameDelta Tick
+        ]
+      else
+        []
+    ) ++
+    [ Browser.Events.onKeyDown (D.map KeyDown <| D.field "key" D.string)
     , Browser.Events.onKeyUp (D.map KeyUp <| D.field "key" D.string)
     ]

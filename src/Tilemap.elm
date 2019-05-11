@@ -1,21 +1,30 @@
 module Tilemap exposing
-  ( Tilemap
+  ( Zone(..)
   , Tile
+  , Tilemap
   , fromList
   , mapFlatten
   , blocked
   , size
   , slice
+
+  , zone
   )
 
 import Array exposing (Array)
 
 import Vector exposing (Vector)
 
+type Zone
+  = Outside
+  | Cave
+  | Unknown
+
 type alias Tile =
   { name : String
   , blocked : Bool
   , color : String
+  , zone : Zone
   }
 
 sky : Tile
@@ -23,6 +32,7 @@ sky =
   { name = "Sky"
   , blocked = False
   , color = "#5DADE2"
+  , zone = Outside
   }
 
 caveSky : Tile
@@ -30,6 +40,7 @@ caveSky =
   { name = "Cave Sky"
   , blocked = False
   , color = "#273746"
+  , zone = Cave
   }
 
 dirt : Tile
@@ -37,6 +48,7 @@ dirt =
   { name = "Dirt"
   , blocked = True
   , color = "#6E2C00"
+  , zone = Outside
   }
 
 grass : Tile
@@ -44,6 +56,7 @@ grass =
   { name = "Grass"
   , blocked = True
   , color = "#2ECC71"
+  , zone = Outside
   }
 
 rock : Tile
@@ -51,6 +64,7 @@ rock =
   { name = "Rock"
   , blocked = True
   , color = "#5D6D7E"
+  , zone = Cave
   }
 
 unknown : Tile
@@ -58,6 +72,7 @@ unknown =
   { name = "Unknown"
   , blocked = True
   , color = "magenta"
+  , zone = Unknown
   }
 
 type Tilemap =
@@ -123,3 +138,14 @@ slice start end (TM rows) =
     |> Array.slice start.y end.y
     |> Array.map (Array.slice start.x end.x)
     |> TM
+
+get : Vector Int -> Tilemap -> Tile
+get {x, y} (TM rows) =
+  rows
+    |> Array.get y
+    |> Maybe.andThen (Array.get x)
+    |> Maybe.withDefault unknown
+
+zone : Vector Int -> Tilemap -> Zone
+zone pos =
+  get pos >> .zone
