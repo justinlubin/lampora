@@ -18,6 +18,7 @@ type Key
   | Down
   | Left
   | Space
+  | Z
 
 keyString : Key -> String
 keyString k =
@@ -36,6 +37,9 @@ keyString k =
 
     Space ->
       " "
+
+    Z ->
+      "z"
 
 empty : KeyManager
 empty =

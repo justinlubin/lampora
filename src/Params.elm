@@ -36,4 +36,4 @@ keyRight =
 
 keyJump : Key
 keyJump =
-  Space
+  Z
