@@ -18,8 +18,8 @@ player pos eid world =
           ECS.add eid
             { x = pos.x
             , y = pos.y
-            , width = 1
-            , height = 1
+            , width = 0.875
+            , height = 1.5
             }
             world.boundingBox
       , physics =

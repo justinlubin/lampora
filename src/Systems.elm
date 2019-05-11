@@ -155,7 +155,7 @@ tilemapCollision axis _ world =
                       if vel.x < 0 then
                         toFloat <| ceiling bbox.x
                       else if vel.x > 0 then
-                        toFloat <| floor bbox.x
+                        (toFloat << floor <| bbox.x + bbox.width) - bbox.width
                       else
                         bbox.x
               }
@@ -173,7 +173,7 @@ tilemapCollision axis _ world =
                       if vel.y < 0 then
                         toFloat <| ceiling bbox.y
                       else if vel.y > 0 then
-                        toFloat <| floor bbox.y
+                        (toFloat << floor <| bbox.y + bbox.height) - bbox.height
                       else
                         bbox.y
               }
