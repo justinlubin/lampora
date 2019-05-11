@@ -23,6 +23,9 @@ type alias World =
   , keyManager : KeyManager
 
   , followedEntity : Maybe ECS.EntityId
+
+  , zone : Tilemap.Zone
+  , previousZone : Tilemap.Zone
   }
 
 destruct : ECS.EntityId -> World -> World

@@ -1,3 +1,5 @@
+(function() {
+
 "use strict";
 
 var canvas, ctx;
@@ -49,3 +51,5 @@ app.ports.canvas.subscribe(function(data) {
       break;
   }
 });
+
+})();

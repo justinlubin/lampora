@@ -5,7 +5,6 @@ port module Draw.Canvas exposing
 
 import Json.Encode as E
 
-import Params
 import Draw.Renderable as Renderable exposing (Renderable)
 
 port canvas : E.Value -> Cmd msg

@@ -15,7 +15,7 @@ import ECS
 
 import Vector
 import Params
-import Tilemap
+import Tilemap exposing (Zone(..))
 import World exposing (World)
 import Systems
 import Entities
@@ -59,6 +59,7 @@ startLevel =
   , [4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 4, 4]
   , [4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4]
   , [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4]
+  , [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4]
   ]
 
 initWorld : World
@@ -79,6 +80,10 @@ initWorld =
       KeyManager.empty
   , followedEntity =
       Nothing
+  , zone =
+      Outside
+  , previousZone =
+      Unknown
   }
 
 initGame : ECS.Game World
@@ -94,6 +99,7 @@ initGame =
           , Systems.tilemapCollision Systems.Horizontal
           , Systems.movement Systems.Vertical
           , Systems.tilemapCollision Systems.Vertical
+          , Systems.zone
           ]
       , dynamicSystems =
           [ Systems.render

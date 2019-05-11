@@ -4,6 +4,7 @@ module Systems exposing
   , movement
   , tilemapCollision
   , input
+  , zone
 
   , render
   )
@@ -23,7 +24,7 @@ import Tilemap exposing (Tilemap, Tile)
 --------------------------------------------------------------------------------
 
 gravity : ECS.FixedSystem World
-gravity dt world=
+gravity dt world =
   let
     newPhysics =
       ECS.map
@@ -252,6 +253,35 @@ input _ world =
           )
   in
     { world | physics = newPhysics }
+
+zone : ECS.FixedSystem World
+zone _ world =
+  { world
+      | previousZone =
+          world.zone
+
+      , zone =
+          case world.followedEntity of
+            Just eid ->
+              case ECS.get eid world.boundingBox of
+                Just bb ->
+                  let
+                    pos =
+                      Vector.map round
+                        { x = bb.x + bb.width / 2
+                        , y = bb.y + bb.height / 2
+                        }
+                  in
+                    Tilemap.zone
+                      pos
+                      world.tilemap
+
+                Nothing ->
+                  world.zone
+
+            Nothing ->
+              world.zone
+  }
 
 --------------------------------------------------------------------------------
 -- Dynamic Systems

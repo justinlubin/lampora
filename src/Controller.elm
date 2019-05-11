@@ -13,6 +13,8 @@ import ECS
 import Params
 import Model exposing (Model)
 import Draw.Canvas as Canvas
+import Audio
+import Tilemap exposing (Zone(..))
 
 type Msg
   = Tick Float -- in milliseconds!
@@ -37,10 +39,23 @@ update msg model =
           }
       in
         ( newModel
-        , Canvas.send <|
-            Canvas.Draw
-              delta
-              newModel.game.world.renderables
+        , Cmd.batch
+            [ Canvas.send <|
+                Canvas.Draw
+                  delta
+                  newModel.game.world.renderables
+            , if
+                newModel.game.world.zone /= newModel.game.world.previousZone
+              then
+                if newModel.game.world.zone == Cave then
+                  Audio.send <|
+                    Audio.Play "drums"
+                else
+                  Audio.send <|
+                    Audio.Stop "drums"
+              else
+                Cmd.none
+            ]
         )
 
     KeyDown s ->
@@ -91,10 +106,16 @@ update msg model =
 
     PlayClicked ->
       ( { model | playing = True }
-      , Canvas.send <|
-          Canvas.Init
-            (Params.viewportWidth * Params.tileSize * Params.scale)
-            (Params.viewportHeight * Params.tileSize * Params.scale)
+      , Cmd.batch
+          [ Canvas.send <|
+              Canvas.Init
+                (Params.viewportWidth * Params.tileSize * Params.scale)
+                (Params.viewportHeight * Params.tileSize * Params.scale)
+          , Audio.send <|
+              Audio.Init
+                [ "leadguitar", "drums" ]
+                "leadguitar"
+          ]
       )
 
 subscriptions : Model -> Sub Msg

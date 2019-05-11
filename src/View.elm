@@ -29,30 +29,10 @@ view model =
   if model.playing then
     Html.div
       []
-      [ Html.text "Welcome to the "
-      , Html.text <|
-          case model.game.world.followedEntity of
-            Just eid ->
-              case ECS.get eid model.game.world.boundingBox of
-                Just bb ->
-                  let
-                    pos =
-                      Vector.map round
-                        { x = bb.x + bb.width / 2
-                        , y = bb.y + bb.height / 2
-                        }
-                  in
-                    zoneString <|
-                      Tilemap.zone
-                        pos
-                        model.game.world.tilemap
-
-                Nothing ->
-                  ""
-
-            Nothing ->
-              ""
-      , Html.text " Zone! Get ready!"
+      [ Html.text <|
+          "Welcome to the "
+            ++ zoneString model.game.world.zone
+            ++ " Zone! Get ready!"
       ]
   else
     Html.button
