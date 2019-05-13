@@ -19,6 +19,7 @@ import Tilemap exposing (Zone(..))
 import World exposing (World)
 import Systems
 import Entities
+import Level
 
 type alias Flags =
   ()
@@ -75,7 +76,7 @@ initWorld =
   , userControl =
       ECS.empty
   , tilemap =
-      Tilemap.fromList startLevel
+      Tilemap.fromList Level.level
   , keyManager =
       KeyManager.empty
   , followedEntity =
@@ -117,7 +118,7 @@ initGame =
 
     (player, game1) =
       ECS.createEntity
-        (Entities.player { x = 11, y = 13 })
+        (Entities.player { x = 5, y = 103 })
         game0
 
     world1 =
