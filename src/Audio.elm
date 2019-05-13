@@ -1,5 +1,6 @@
 port module Audio exposing
-  ( Msg(..)
+  ( Track(..)
+  , Msg(..)
   , send
   )
 
@@ -9,36 +10,46 @@ import Params
 
 port audio : E.Value -> Cmd msg
 
+type Track
+  = Outside
+  | Cave
+
+allTracks : List Track
+allTracks =
+  [ Outside, Cave ]
+
+trackPath : Track -> String
+trackPath track =
+  case track of
+    Outside ->
+      "outside.mp3"
+
+    Cave ->
+      "cave.mp3"
+
+tracklist : List Track -> E.Value
+tracklist =
+  List.map trackPath >> E.list E.string
+
 type Msg
-  = Init (List String) String
-  | Play String
-  | Stop String
+  = Init (List Track)
+  | Set (List Track)
 
 send : Msg -> Cmd msg
 send canvasMsg =
   let
     (name, args) =
       case canvasMsg of
-        Init tracks startingTrack ->
+        Init startingTracklist ->
           ( "init"
-          , [ ("tracks", E.list E.string tracks)
-            , ("startingTrack", E.string startingTrack)
+          , [ ("allTracks", tracklist allTracks)
+            , ("startingTracklist", tracklist startingTracklist)
             ]
           )
 
-        Play track ->
-          ( "play"
-          , [ ( "track"
-              , E.string track
-              )
-            ]
-          )
-
-        Stop track ->
-          ( "stop"
-          , [ ( "track"
-              , E.string track
-              )
+        Set theTracklist ->
+          ( "set"
+          , [ ("tracklist", tracklist theTracklist)
             ]
           )
   in

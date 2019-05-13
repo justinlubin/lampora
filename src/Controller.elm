@@ -22,6 +22,18 @@ type Msg
   | KeyUp String
   | PlayClicked
 
+tracksFromZone : Zone -> List Audio.Track
+tracksFromZone zone =
+  case zone of
+    Outside ->
+      [ Audio.Outside ]
+
+    Cave ->
+      [ Audio.Cave ]
+
+    Unknown ->
+      []
+
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
@@ -47,12 +59,8 @@ update msg model =
             , if
                 newModel.game.world.zone /= newModel.game.world.previousZone
               then
-                if newModel.game.world.zone == Cave then
-                  Audio.send <|
-                    Audio.Play "drums"
-                else
-                  Audio.send <|
-                    Audio.Stop "drums"
+                Audio.send <|
+                  Audio.Set (tracksFromZone newModel.game.world.zone)
               else
                 Cmd.none
             ]
@@ -112,9 +120,7 @@ update msg model =
                 (Params.viewportWidth * Params.tileSize * Params.scale)
                 (Params.viewportHeight * Params.tileSize * Params.scale)
           , Audio.send <|
-              Audio.Init
-                [ "leadguitar", "drums" ]
-                "leadguitar"
+              Audio.Init (tracksFromZone model.game.world.zone)
           ]
       )
 

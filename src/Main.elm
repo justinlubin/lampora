@@ -83,7 +83,7 @@ initWorld =
   , zone =
       Outside
   , previousZone =
-      Unknown
+      Outside
   }
 
 initGame : ECS.Game World

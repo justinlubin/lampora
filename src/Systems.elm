@@ -272,9 +272,12 @@ zone _ world =
                         , y = bb.y + bb.height / 2
                         }
                   in
-                    Tilemap.zone
-                      pos
-                      world.tilemap
+                    case Tilemap.zone pos world.tilemap of
+                      Just z ->
+                        z
+
+                      Nothing ->
+                        world.zone
 
                 Nothing ->
                   world.zone

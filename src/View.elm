@@ -32,7 +32,7 @@ view model =
       [ Html.text <|
           "Welcome to the "
             ++ zoneString model.game.world.zone
-            ++ " Zone! Get ready!"
+            ++ " Zone. Get ready!"
       ]
   else
     Html.button

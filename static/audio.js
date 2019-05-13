@@ -4,87 +4,80 @@
 
 // Core Audio
 
-let buffers = {}
-let tracks = {}
+let buffers = {};
+let sources = {};
+let gainNodes = {};
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 const audioCtx = new AudioContext();
 
-async function getMusic(filepath) {
-  const response = await fetch(filepath);
+async function getMusic(path) {
+  const response = await fetch(path);
   const arrayBuffer = await response.arrayBuffer();
   const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
-  return audioBuffer;
+  return {
+    path: path,
+    buffer: audioBuffer
+  };
 }
 
-async function loadMusic(filePath) {
-  const track = await getMusic(filePath);
-  return track;
-}
+let firstOffset = null;
+let currentOffset = 0;
 
-let offset = 0;
+const fadeTime = 0;
+function playSynced(path) {
+  const source = audioCtx.createBufferSource();
+  source.buffer = buffers[path];
+  source.loop = true;
 
-function playTrack(audioBuffer) {
-  const trackSource = audioCtx.createBufferSource();
-  trackSource.buffer = audioBuffer;
-  trackSource.connect(audioCtx.destination);
-  trackSource.loop = true;
+  const gainNode = audioCtx.createGain();
+  source.connect(gainNode);
+  gainNode.connect(audioCtx.destination);
 
-  if (offset == 0) {
-    trackSource.start();
-    offset = audioCtx.currentTime;
+  gainNode.gain.setValueAtTime(1, audioCtx.currentTime);
+
+  currentOffset = audioCtx.currentTime % source.buffer.duration;
+
+  if (firstOffset == null) {
+    source.start();
+    firstOffset = audioCtx.currentTime;
   } else {
-    trackSource.start(0, audioCtx.currentTime - offset);
+    source.start(0, currentOffset - firstOffset);
   }
 
-  return trackSource;
+  sources[path] = source;
+  gainNodes[path] = gainNode;
+
+  console.log("play: " + path);
 }
 
-function stopTrack(audioBuffer) {
-  const trackSource = audioCtx.createBufferSource();
-  trackSource.buffer = audioBuffer;
-  trackSource.connect(audioCtx.destination);
+function stop(path) {
+  if (sources[path]) {
+    sources[path].stop(audioCtx.currentTime + fadeTime);
 
-  if (offset == 0) {
-    trackSource.start();
-    offset = audioCtx.currentTime;
-  } else {
-    trackSource.start(0, audioCtx.currentTime - offset);
+    sources[path] = null;
+    gainNodes[path] = null;
   }
-
-  return trackSource;
 }
 
 // Message Handling
 
-function init(theTracks, startingTrack) {
-  theTracks.forEach((track, i) => {
-    loadMusic(track + ".wav").then((buffer) => {
-      buffers[track] = buffer;
-      console.log("done: " + track);
-      if (track === startingTrack) {
-        play(track);
+function init(allTracks, startingTracklist) {
+  Promise.all(allTracks.map(getMusic)).then(musics => {
+    musics.forEach(music => {
+      buffers[music.path] = music.buffer;
+      console.log("done: " + music.path);
+
+      if (startingTracklist.includes(music.path)) {
+        playSynced(music.path);
       }
     });
   });
 }
 
-function play(track) {
-  let buffer = buffers[track];
-  if (buffer) {
-    tracks[track] = playTrack(buffer);
-  } else {
-    console.warn("track '" + track + "' not ready yet!");
-  }
-}
-
-function stop(track) {
-  console.log("stop: " + track);
-  if (tracks[track]) {
-    tracks[track].stop();
-  } else {
-    console.warn("stop: track '" + track + "' not found!");
-  }
+function set(tracklist) {
+  Object.keys(sources).forEach(stop);
+  tracklist.forEach(playSynced);
 }
 
 app.ports.audio.subscribe(function(data) {
@@ -93,13 +86,10 @@ app.ports.audio.subscribe(function(data) {
 
   switch (name) {
     case "init":
-      init(args.tracks, args.startingTrack);
+      init(args.allTracks, args.startingTracklist);
       break;
-    case "play":
-      play(args.track);
-      break;
-    case "stop":
-      stop(args.track);
+    case "set":
+      set(args.tracklist);
       break;
     default:
       console.warn("audio subscription: unknown command");
