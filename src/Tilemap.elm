@@ -91,11 +91,11 @@ fromList rows =
   let
     fromInt i =
       case i of
-        0 -> sky
-        1 -> caveSky
-        2 -> dirt
-        3 -> grass
-        4 -> rock
+        0   -> sky
+        78  -> caveSky
+        41  -> dirt
+        25  -> grass
+        123 -> rock
         _ -> unknown
   in
     rows
