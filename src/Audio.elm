@@ -22,10 +22,10 @@ trackPath : Track -> String
 trackPath track =
   case track of
     Outside ->
-      "outside.mp3"
+      "music/outside.mp3"
 
     Cave ->
-      "cave.mp3"
+      "music/cave.mp3"
 
 tracklist : List Track -> E.Value
 tracklist =
