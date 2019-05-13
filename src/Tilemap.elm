@@ -24,7 +24,7 @@ type alias Tile =
   { name : String
   , blocked : Bool
   , color : String
-  , zone : Zone
+  , zone : Maybe Zone
   }
 
 sky : Tile
@@ -32,7 +32,7 @@ sky =
   { name = "Sky"
   , blocked = False
   , color = "#5DADE2"
-  , zone = Outside
+  , zone = Just Outside
   }
 
 caveSky : Tile
@@ -40,7 +40,7 @@ caveSky =
   { name = "Cave Sky"
   , blocked = False
   , color = "#273746"
-  , zone = Cave
+  , zone = Just Cave
   }
 
 dirt : Tile
@@ -48,7 +48,7 @@ dirt =
   { name = "Dirt"
   , blocked = True
   , color = "#6E2C00"
-  , zone = Outside
+  , zone = Nothing
   }
 
 grass : Tile
@@ -56,7 +56,7 @@ grass =
   { name = "Grass"
   , blocked = True
   , color = "#2ECC71"
-  , zone = Outside
+  , zone = Nothing
   }
 
 rock : Tile
@@ -64,7 +64,7 @@ rock =
   { name = "Rock"
   , blocked = True
   , color = "#5D6D7E"
-  , zone = Cave
+  , zone = Nothing
   }
 
 unknown : Tile
@@ -72,7 +72,7 @@ unknown =
   { name = "Unknown"
   , blocked = True
   , color = "magenta"
-  , zone = Unknown
+  , zone = Just Unknown
   }
 
 type Tilemap =
@@ -146,6 +146,6 @@ get {x, y} (TM rows) =
     |> Maybe.andThen (Array.get x)
     |> Maybe.withDefault unknown
 
-zone : Vector Int -> Tilemap -> Zone
+zone : Vector Int -> Tilemap -> Maybe Zone
 zone pos =
   get pos >> .zone
