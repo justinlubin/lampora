@@ -1,6 +1,8 @@
 module World exposing
-  ( World
+  ( State(..)
+  , World
   , destruct
+  , win
   )
 
 import KeyManager exposing (KeyManager)
@@ -8,6 +10,10 @@ import ECS
 import Components exposing (..)
 import Draw.Renderable exposing (Renderable)
 import Tilemap exposing (Tilemap)
+
+type State
+  = Playing
+  | Won
 
 type alias World =
   { renderables : List Renderable
@@ -30,6 +36,8 @@ type alias World =
 
   , score : Int
   , winningScore : Int
+
+  , state : State
   }
 
 destruct : ECS.EntityId -> World -> World
@@ -50,3 +58,11 @@ destruct eid world =
         , shard =
             destroyIn world.shard
     }
+
+win : World -> World
+win world =
+  { world
+      | physics = ECS.empty
+      , userControl = ECS.empty
+      , state = Won
+  }

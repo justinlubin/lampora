@@ -1,0 +1,62 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  min-height: 100%;
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  font-family: "sans-serif";
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+#arcade {
+  display: flex;
+  flex-direction: column;
+}
+
+#screen {
+  border: 10px solid gray;
+  position: relative;
+}
+
+#game {
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+
+  transition: opacity 0.5s ease;
+}
+
+#won-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-color: rgba(150, 255, 150, 0.5);
+  color: #FFFFFF;
+  font-size: 6em;
+  font-weight: bold;
+}
+
+#play-button {
+  padding: 10px 20px;
+  text-align: center;
+}

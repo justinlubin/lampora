@@ -8,6 +8,8 @@ import View
 import Controller exposing (Msg)
 
 import Draw.Canvas as Canvas
+import Audio
+import Music
 
 import KeyManager
 
@@ -91,6 +93,8 @@ initWorld =
       0
   , winningScore =
       0
+  , state =
+      World.Playing
   }
 
 initGame : ECS.Game World
@@ -145,10 +149,19 @@ init : Flags -> (Model, Cmd Msg)
 init _ =
   ( { game =
         initGame
+    , audioLoaded =
+        False
     , playing =
         False
     }
-  , Cmd.none
+  , Cmd.batch
+      [ Canvas.send <|
+          Canvas.Init
+            Params.screenWidth
+            Params.screenHeight
+      , Audio.send <|
+          Audio.Init (Music.tracksFromZone initGame.world.zone)
+      ]
   )
 
 main : Program Flags Model Msg

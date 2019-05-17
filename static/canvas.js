@@ -5,10 +5,9 @@
 var canvas, ctx;
 
 function init(width, height) {
-  canvas = document.createElement("canvas");
+  canvas = document.getElementById("game");
   canvas.width = width;
   canvas.height = height;
-  document.body.appendChild(canvas);
 
   ctx = canvas.getContext("2d");
 }

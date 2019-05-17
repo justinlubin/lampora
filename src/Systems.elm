@@ -238,6 +238,10 @@ userCollision _ world =
             world.shard
         )
   in
+    if newWorld.score >= newWorld.winningScore then
+      World.win newWorld
+    else
+      newWorld
 
 input : ECS.FixedSystem World
 input _ world =

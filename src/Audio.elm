@@ -1,14 +1,18 @@
 port module Audio exposing
   ( Track(..)
-  , Msg(..)
+  , JsMsg(..)
+  , ElmMsg(..)
   , send
+  , listen
   )
 
 import Json.Encode as E
+import Json.Decode as D
 
 import Params
 
-port audio : E.Value -> Cmd msg
+port audioToJs : E.Value -> Cmd msg
+port audioToElm : (E.Value -> msg) -> Sub msg
 
 type Track
   = Outside
@@ -31,11 +35,11 @@ tracklist : List Track -> E.Value
 tracklist =
   List.map trackPath >> E.list E.string
 
-type Msg
+type JsMsg
   = Init (List Track)
   | Set (List Track)
 
-send : Msg -> Cmd msg
+send : JsMsg -> Cmd msg
 send canvasMsg =
   let
     (name, args) =
@@ -53,8 +57,22 @@ send canvasMsg =
             ]
           )
   in
-    audio <|
+    audioToJs <|
       E.object
         [ ("name", E.string name)
         , ("args", E.object args)
         ]
+
+type ElmMsg
+  = Loaded
+  | Unknown
+
+listen : (ElmMsg -> msg) -> Sub msg
+listen handler =
+  audioToElm <| \val ->
+    case D.decodeValue (D.field "name" D.string) val of
+      Ok "loaded" ->
+        handler Loaded
+
+      _ ->
+        handler Unknown

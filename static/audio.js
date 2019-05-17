@@ -62,16 +62,15 @@ function stop(path) {
 
 // Message Handling
 
-function init(allTracks, startingTracklist) {
+const msgLoaded = {name: "loaded", args: []};
+
+function init(allTracks) {
   Promise.all(allTracks.map(getMusic)).then(musics => {
     musics.forEach(music => {
       buffers[music.path] = music.buffer;
       console.log("done: " + music.path);
-
-      if (startingTracklist.includes(music.path)) {
-        playSynced(music.path);
-      }
     });
+    app.ports.audioToElm.send(msgLoaded);
   });
 }
 
@@ -80,19 +79,19 @@ function set(tracklist) {
   tracklist.forEach(playSynced);
 }
 
-app.ports.audio.subscribe(function(data) {
+app.ports.audioToJs.subscribe(function(data) {
   let name = data.name;
   let args = data.args;
 
   switch (name) {
     case "init":
-      init(args.allTracks, args.startingTracklist);
+      init(args.allTracks);
       break;
     case "set":
       set(args.tracklist);
       break;
     default:
-      console.warn("audio subscription: unknown command");
+      console.warn("audioToJs subscription: unknown command");
       break;
   }
 });
