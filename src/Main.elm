@@ -75,6 +75,8 @@ initWorld =
       ECS.empty
   , userControl =
       ECS.empty
+  , shard =
+      ECS.empty
   , tilemap =
       Tilemap.fromList Level.level
   , keyManager =
@@ -85,6 +87,10 @@ initWorld =
       Outside
   , previousZone =
       Outside
+  , score =
+      0
+  , winningScore =
+      0
   }
 
 initGame : ECS.Game World
@@ -101,6 +107,7 @@ initGame =
           , Systems.movement Systems.Vertical
           , Systems.tilemapCollision Systems.Vertical
           , Systems.zone
+          , Systems.userCollision
           ]
       , dynamicSystems =
           [ Systems.render

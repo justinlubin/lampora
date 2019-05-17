@@ -1,9 +1,4 @@
-module Components exposing
-  ( Appearance
-  , BoundingBox
-  , Physics
-  , UserControl
-  )
+module Components exposing (..)
 
 import Vector exposing (Vector)
 
@@ -29,4 +24,7 @@ type alias Physics =
   }
 
 type alias UserControl =
+  {}
+
+type alias Shard =
   {}

@@ -1,13 +1,4 @@
-module Systems exposing
-  ( gravity
-  , Axis(..)
-  , movement
-  , tilemapCollision
-  , input
-  , zone
-
-  , render
-  )
+module Systems exposing (..)
 
 import Utils
 import KeyManager
@@ -206,6 +197,47 @@ tilemapCollision axis _ world =
         , boundingBox =
             ECS.merge newBoundingBox world.boundingBox
     }
+
+userCollision : ECS.FixedSystem World
+userCollision _ world =
+  let
+    collides : BoundingBox -> BoundingBox -> Bool
+    collides a b =
+      not <|
+        a.x + a.width < b.x
+          || a.y + a.height < b.y
+          || a.x > b.x + b.width
+          || a.y > b.y + b.height
+
+    collidedEntities : ECS.Components BoundingBox
+    collidedEntities =
+      case
+        ECS.first <|
+          ECS.combine world.userControl world.boundingBox
+      of
+        Nothing ->
+          ECS.empty
+
+        Just (eidUser, (_, bbUser)) ->
+          ECS.filter
+            ( \eid bbOther ->
+                eid /= eidUser && collides bbOther bbUser
+            )
+            world.boundingBox
+
+    newWorld =
+      ECS.foldl
+        ( \eid _ worldAcc ->
+            World.destruct
+              eid
+              { world | score = world.score + 1 }
+        )
+        world
+        ( ECS.combine
+            collidedEntities
+            world.shard
+        )
+  in
 
 input : ECS.FixedSystem World
 input _ world =

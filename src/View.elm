@@ -46,11 +46,11 @@ view model =
         [ Html.text <|
             "Welcome to the "
               ++ zoneString model.game.world.zone
-              ++ " Zone. Get ready! Followed entity position is (x: "
-              ++ xString
-              ++ ", y: "
-              ++ yString
-              ++ ")"
+              ++ " Zone. Get ready! Score: "
+              ++ (String.fromInt model.game.world.score)
+              ++ "/"
+              ++ (String.fromInt model.game.world.winningScore)
+              ++ "."
         ]
   else
     Html.button

@@ -55,4 +55,10 @@ shard pos eid world =
             , height = 0.5
             }
             world.boundingBox
+      , shard =
+          ECS.add eid
+            {}
+            world.shard
+      , winningScore =
+          world.winningScore + 1
   }

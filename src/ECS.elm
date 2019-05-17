@@ -10,6 +10,8 @@ module ECS exposing
   , merge
   , map
   , foldl
+  , filter
+  , first
   , FixedSystem
   , DynamicSystem
   , initUId
@@ -100,6 +102,17 @@ map f (C dict) =
 foldl : (EntityId -> a -> acc -> acc) -> acc -> Components a -> acc
 foldl f initialAcc (C dict) =
   Dict.foldl f initialAcc dict
+
+filter : (EntityId -> a -> Bool) -> Components a -> Components a
+filter predicate (C dict) =
+  C <|
+    Dict.filter predicate dict
+
+first : Components a -> Maybe (EntityId, a)
+first (C dict) =
+  dict
+    |> Dict.toList
+    |> List.head
 
 --------------------------------------------------------------------------------
 -- Systems
