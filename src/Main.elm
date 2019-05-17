@@ -88,7 +88,7 @@ initWorld =
   , zone =
       Outside
   , previousZone =
-      Outside
+      Unknown
   , score =
       0
   , winningScore =
