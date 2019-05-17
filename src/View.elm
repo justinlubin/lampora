@@ -27,13 +27,31 @@ zoneString z =
 view : Model -> Html Msg
 view model =
   if model.playing then
-    Html.div
-      []
-      [ Html.text <|
-          "Welcome to the "
-            ++ zoneString model.game.world.zone
-            ++ " Zone. Get ready!"
-      ]
+    let
+      (xString, yString) =
+        case
+          Maybe.andThen
+            (\eid -> ECS.get eid model.game.world.boundingBox)
+            model.game.world.followedEntity
+        of
+          Just { x, y } ->
+            (String.fromFloat x, String.fromFloat y)
+
+          Nothing ->
+            ("?", "?")
+
+    in
+      Html.div
+        []
+        [ Html.text <|
+            "Welcome to the "
+              ++ zoneString model.game.world.zone
+              ++ " Zone. Get ready! Followed entity position is (x: "
+              ++ xString
+              ++ ", y: "
+              ++ yString
+              ++ ")"
+        ]
   else
     Html.button
       [ Events.onClick PlayClicked

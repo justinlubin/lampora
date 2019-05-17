@@ -7,7 +7,10 @@ import Params
 import ECS
 import World exposing (World)
 
-player : Vector Float -> ECS.EntityId -> World -> World
+type alias Constructor =
+  ECS.EntityConstructor World
+
+player : Vector Float -> Constructor
 player pos eid world =
   { world
       | appearance =
@@ -35,4 +38,21 @@ player pos eid world =
           ECS.add eid
             {}
             world.userControl
+  }
+
+shard : Vector Float -> Constructor
+shard pos eid world =
+  { world
+      | appearance =
+          ECS.add eid
+            { color = "blue" }
+            world.appearance
+      , boundingBox =
+          ECS.add eid
+            { x = pos.x + 0.25
+            , y = pos.y + 0.25
+            , width = 0.5
+            , height = 0.5
+            }
+            world.boundingBox
   }

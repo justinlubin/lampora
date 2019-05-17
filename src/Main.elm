@@ -124,8 +124,13 @@ initGame =
     world1 =
       game1.world
 
-    game =
+    game2 =
       { game1 | world = { world1 | followedEntity = Just player }}
+
+    (shard1, game) =
+      ECS.createEntity
+        (Entities.shard { x = 58, y = 100 })
+        game2
   in
     game
 

@@ -88,9 +88,9 @@ movement axis dt world =
   in
     { world
         | physics =
-            newPhysics
+            ECS.merge newPhysics world.physics
         , boundingBox =
-            newBoundingBox
+            ECS.merge newBoundingBox world.boundingBox
     }
 
 tilemapCollision : Axis -> ECS.FixedSystem World
@@ -202,9 +202,9 @@ tilemapCollision axis _ world =
   in
     { world
         | physics =
-            newPhysics
+            ECS.merge newPhysics world.physics
         , boundingBox =
-            newBoundingBox
+            ECS.merge newBoundingBox world.boundingBox
     }
 
 input : ECS.FixedSystem World
@@ -252,7 +252,7 @@ input _ world =
               world.physics
           )
   in
-    { world | physics = newPhysics }
+    { world | physics = ECS.merge newPhysics world.physics }
 
 zone : ECS.FixedSystem World
 zone _ world =
