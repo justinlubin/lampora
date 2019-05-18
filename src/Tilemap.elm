@@ -7,7 +7,6 @@ module Tilemap exposing
   , blocked
   , size
   , slice
-
   , zone
   )
 
@@ -96,7 +95,7 @@ fromList rows =
         41  -> dirt
         25  -> grass
         123 -> rock
-        _ -> unknown
+        _   -> unknown
   in
     rows
       |> List.map (List.map fromInt)

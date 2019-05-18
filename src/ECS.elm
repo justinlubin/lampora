@@ -7,12 +7,17 @@ module ECS exposing
   , get
   , combine
   , separate
+  , merge
   , map
   , foldl
+  , filter
+  , first
   , FixedSystem
   , DynamicSystem
   , initUId
   , Game
+  , EntityConstructor
+  , EntityDestructor
   , createEntity
   , destroyEntity
   , simulateFixed
@@ -84,6 +89,11 @@ separate (C dict) =
   in
     (C newDict1, C newDict2)
 
+merge : Components a -> Components a -> Components a
+merge (C new) (C old) =
+  C <|
+    Dict.union new old
+
 map : (a -> a) -> Components a -> Components a
 map f (C dict) =
   C <|
@@ -92,6 +102,17 @@ map f (C dict) =
 foldl : (EntityId -> a -> acc -> acc) -> acc -> Components a -> acc
 foldl f initialAcc (C dict) =
   Dict.foldl f initialAcc dict
+
+filter : (EntityId -> a -> Bool) -> Components a -> Components a
+filter predicate (C dict) =
+  C <|
+    Dict.filter predicate dict
+
+first : Components a -> Maybe (EntityId, a)
+first (C dict) =
+  dict
+    |> Dict.toList
+    |> List.head
 
 --------------------------------------------------------------------------------
 -- Systems
@@ -137,8 +158,13 @@ type alias Game w =
   , world : w
   }
 
-createEntity :
-  (EntityId -> world -> world) -> Game world -> (EntityId, Game world)
+type alias EntityConstructor world =
+  EntityId -> world -> world
+
+type alias EntityDestructor world =
+  EntityId -> world -> world
+
+createEntity : EntityConstructor world -> Game world -> (EntityId, Game world)
 createEntity construct game =
   let
     (UId n) =
@@ -159,8 +185,7 @@ createEntity construct game =
       }
     )
 
-destroyEntity :
-  (EntityId -> world -> world) -> EntityId -> Game world -> Game world
+destroyEntity : EntityDestructor world -> EntityId -> Game world -> Game world
 destroyEntity destruct eid game =
   { game
       | world =

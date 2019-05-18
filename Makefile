@@ -5,3 +5,7 @@ all:
 fast:
 	elm make src/Main.elm --output=out/main.js --optimize && \
 	cp -a static/. out # Source: https://askubuntu.com/a/86891
+
+# https://discourse.elm-lang.org/t/counting-lines-of-code-loc/1459
+loc:
+	find src/ -type f -name '*.elm' | xargs cat | wc -l

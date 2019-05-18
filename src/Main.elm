@@ -8,6 +8,8 @@ import View
 import Controller exposing (Msg)
 
 import Draw.Canvas as Canvas
+import Audio
+import Music
 
 import KeyManager
 
@@ -75,6 +77,8 @@ initWorld =
       ECS.empty
   , userControl =
       ECS.empty
+  , shard =
+      ECS.empty
   , tilemap =
       Tilemap.fromList Level.level
   , keyManager =
@@ -84,7 +88,13 @@ initWorld =
   , zone =
       Outside
   , previousZone =
-      Outside
+      Unknown
+  , score =
+      0
+  , winningScore =
+      0
+  , state =
+      World.Playing
   }
 
 initGame : ECS.Game World
@@ -101,6 +111,7 @@ initGame =
           , Systems.movement Systems.Vertical
           , Systems.tilemapCollision Systems.Vertical
           , Systems.zone
+          , Systems.userCollision
           ]
       , dynamicSystems =
           [ Systems.render
@@ -124,8 +135,13 @@ initGame =
     world1 =
       game1.world
 
-    game =
+    game2 =
       { game1 | world = { world1 | followedEntity = Just player }}
+
+    (shard1, game) =
+      ECS.createEntity
+        (Entities.shard { x = 58, y = 100 })
+        game2
   in
     game
 
@@ -133,10 +149,19 @@ init : Flags -> (Model, Cmd Msg)
 init _ =
   ( { game =
         initGame
+    , audioLoaded =
+        False
     , playing =
         False
     }
-  , Cmd.none
+  , Cmd.batch
+      [ Canvas.send <|
+          Canvas.Init
+            Params.screenWidth
+            Params.screenHeight
+      , Audio.send <|
+          Audio.Init (Music.tracksFromZone initGame.world.zone)
+      ]
   )
 
 main : Program Flags Model Msg

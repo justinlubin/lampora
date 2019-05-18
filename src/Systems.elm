@@ -1,13 +1,4 @@
-module Systems exposing
-  ( gravity
-  , Axis(..)
-  , movement
-  , tilemapCollision
-  , input
-  , zone
-
-  , render
-  )
+module Systems exposing (..)
 
 import Utils
 import KeyManager
@@ -88,9 +79,9 @@ movement axis dt world =
   in
     { world
         | physics =
-            newPhysics
+            ECS.merge newPhysics world.physics
         , boundingBox =
-            newBoundingBox
+            ECS.merge newBoundingBox world.boundingBox
     }
 
 tilemapCollision : Axis -> ECS.FixedSystem World
@@ -202,10 +193,55 @@ tilemapCollision axis _ world =
   in
     { world
         | physics =
-            newPhysics
+            ECS.merge newPhysics world.physics
         , boundingBox =
-            newBoundingBox
+            ECS.merge newBoundingBox world.boundingBox
     }
+
+userCollision : ECS.FixedSystem World
+userCollision _ world =
+  let
+    collides : BoundingBox -> BoundingBox -> Bool
+    collides a b =
+      not <|
+        a.x + a.width < b.x
+          || a.y + a.height < b.y
+          || a.x > b.x + b.width
+          || a.y > b.y + b.height
+
+    collidedEntities : ECS.Components BoundingBox
+    collidedEntities =
+      case
+        ECS.first <|
+          ECS.combine world.userControl world.boundingBox
+      of
+        Nothing ->
+          ECS.empty
+
+        Just (eidUser, (_, bbUser)) ->
+          ECS.filter
+            ( \eid bbOther ->
+                eid /= eidUser && collides bbOther bbUser
+            )
+            world.boundingBox
+
+    newWorld =
+      ECS.foldl
+        ( \eid _ worldAcc ->
+            World.destruct
+              eid
+              { world | score = world.score + 1 }
+        )
+        world
+        ( ECS.combine
+            collidedEntities
+            world.shard
+        )
+  in
+    if newWorld.score >= newWorld.winningScore then
+      World.win newWorld
+    else
+      newWorld
 
 input : ECS.FixedSystem World
 input _ world =
@@ -252,7 +288,7 @@ input _ world =
               world.physics
           )
   in
-    { world | physics = newPhysics }
+    { world | physics = ECS.merge newPhysics world.physics }
 
 zone : ECS.FixedSystem World
 zone _ world =

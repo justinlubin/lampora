@@ -14,25 +14,16 @@ import Params
 import Model exposing (Model)
 import Draw.Canvas as Canvas
 import Audio
+import Music
 import Tilemap exposing (Zone(..))
 
 type Msg
   = Tick Float -- in milliseconds!
   | KeyDown String
   | KeyUp String
+  | AudioLoaded
+  | AudioUnknown
   | PlayClicked
-
-tracksFromZone : Zone -> List Audio.Track
-tracksFromZone zone =
-  case zone of
-    Outside ->
-      [ Audio.Outside ]
-
-    Cave ->
-      [ Audio.Cave ]
-
-    Unknown ->
-      []
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -60,7 +51,7 @@ update msg model =
                 newModel.game.world.zone /= newModel.game.world.previousZone
               then
                 Audio.send <|
-                  Audio.Set (tracksFromZone newModel.game.world.zone)
+                  Audio.Set (Music.tracksFromZone newModel.game.world.zone)
               else
                 Cmd.none
             ]
@@ -112,16 +103,19 @@ update msg model =
         , Cmd.none
         )
 
+    AudioLoaded ->
+      ( { model | audioLoaded = True }
+      , Cmd.none
+      )
+
+    AudioUnknown ->
+      ( model
+      , Cmd.none
+      )
+
     PlayClicked ->
       ( { model | playing = True }
-      , Cmd.batch
-          [ Canvas.send <|
-              Canvas.Init
-                (Params.viewportWidth * Params.tileSize * Params.scale)
-                (Params.viewportHeight * Params.tileSize * Params.scale)
-          , Audio.send <|
-              Audio.Init (tracksFromZone model.game.world.zone)
-          ]
+      , Cmd.none
       )
 
 subscriptions : Model -> Sub Msg
@@ -135,4 +129,11 @@ subscriptions model =
     ) ++
     [ Browser.Events.onKeyDown (D.map KeyDown <| D.field "key" D.string)
     , Browser.Events.onKeyUp (D.map KeyUp <| D.field "key" D.string)
+    , Audio.listen <| \msg ->
+        case msg of
+          Audio.Loaded ->
+            AudioLoaded
+
+          Audio.Unknown ->
+            AudioUnknown
     ]
