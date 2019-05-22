@@ -32,12 +32,13 @@ type alias World =
   , followedEntity : Maybe ECS.EntityId
 
   , zone : Tilemap.Zone
-  , previousZone : Tilemap.Zone
 
   , score : Int
   , winningScore : Int
 
   , state : State
+
+  , musicNeedsUpdate : Bool
   }
 
 destruct : ECS.EntityId -> World -> World

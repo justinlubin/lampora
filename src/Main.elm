@@ -87,14 +87,14 @@ initWorld =
       Nothing
   , zone =
       Outside
-  , previousZone =
-      Unknown
   , score =
       0
   , winningScore =
       0
   , state =
       World.Playing
+  , musicNeedsUpdate =
+      True
   }
 
 initGame : ECS.Game World
@@ -138,10 +138,21 @@ initGame =
     game2 =
       { game1 | world = { world1 | followedEntity = Just player }}
 
-    (shard1, game) =
-      ECS.createEntity
-        (Entities.shard { x = 58, y = 100 })
-        game2
+    game =
+      let
+        shardAdder pos =
+          ECS.createEntity (Entities.shard pos) >> Tuple.second
+      in
+        List.foldl
+          shardAdder
+          game2
+          [ { x = 125, y = 102 }
+          , { x = 130, y = 80 }
+          , { x = 76,  y = 67 }
+          , { x = 48,  y = 61 }
+          , { x = 45,  y = 81 }
+          , { x = 57,  y = 99 }
+          ]
   in
     game
 
@@ -160,7 +171,7 @@ init _ =
             Params.screenWidth
             Params.screenHeight
       , Audio.send <|
-          Audio.Init (Music.tracksFromZone initGame.world.zone)
+          Audio.Init (Music.tracks 0 initGame.world.zone)
       ]
   )
 
