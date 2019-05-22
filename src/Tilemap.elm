@@ -16,6 +16,7 @@ import Vector exposing (Vector)
 
 type Zone
   = Outside
+  | Winter
   | Cave
   | Unknown
 
@@ -32,6 +33,14 @@ sky =
   , blocked = False
   , color = "#5DADE2"
   , zone = Just Outside
+  }
+
+thinSky : Tile
+thinSky =
+  { name = "Thin Sky"
+  , blocked = False
+  , color = "#446be2"
+  , zone = Just Winter
   }
 
 caveSky : Tile
@@ -55,6 +64,14 @@ grass =
   { name = "Grass"
   , blocked = True
   , color = "#2ECC71"
+  , zone = Nothing
+  }
+
+snow : Tile
+snow =
+  { name = "Snow"
+  , blocked = True
+  , color = "#FFFFFF"
   , zone = Nothing
   }
 
@@ -91,9 +108,11 @@ fromList rows =
     fromInt i =
       case i of
         0   -> sky
+        81  -> thinSky
         78  -> caveSky
         41  -> dirt
         25  -> grass
+        101 -> snow
         123 -> rock
         _   -> unknown
   in

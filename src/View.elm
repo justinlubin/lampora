@@ -26,6 +26,9 @@ zoneString z =
     Outside ->
       "Outside"
 
+    Winter ->
+      "Winter"
+
     Cave ->
       "Cave"
 

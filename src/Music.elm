@@ -3,16 +3,35 @@ module Music exposing
   )
 
 import Tilemap exposing (Zone(..))
-import Audio exposing (Track)
+import Audio exposing (Track(..))
 
 tracksFromZone : Zone -> List Track
 tracksFromZone zone =
-  case zone of
-    Outside ->
-      [ Audio.Outside ]
+  let
+    common =
+      [ Oboe
+      , Clarinet
+      , Bassoon
+      ]
 
-    Cave ->
-      [ Audio.Cave ]
+    extra =
+      case zone of
+        Outside ->
+          [ Piano2
+          ]
 
-    Unknown ->
-      []
+        Winter ->
+          [ SleighBells
+          , Chimes
+          , Piano1
+          ]
+
+        Cave ->
+          [ Tuba
+          , Piano2
+          ]
+
+        Unknown ->
+          []
+  in
+    common ++ extra

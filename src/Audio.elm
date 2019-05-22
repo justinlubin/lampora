@@ -15,21 +15,74 @@ port audioToJs : E.Value -> Cmd msg
 port audioToElm : (E.Value -> msg) -> Sub msg
 
 type Track
-  = Outside
-  | Cave
+  = Bassoon
+  | Chimes
+  | Clarinet
+  | Drumset
+  | Flute
+  | Oboe
+  | Piano1
+  | Piano2
+  | SleighBells
+  | Tuba
+  | Violin
+  | Violoncello
 
 allTracks : List Track
 allTracks =
-  [ Outside, Cave ]
+  [ Bassoon
+  , Chimes
+  , Clarinet
+  , Drumset
+  , Flute
+  , Oboe
+  , Piano1
+  , Piano2
+  , SleighBells
+  , Tuba
+  , Violin
+  , Violoncello
+  ]
 
 trackPath : Track -> String
 trackPath track =
   case track of
-    Outside ->
-      "music/outside.mp3"
+    Bassoon ->
+      "music/BG-Bassoon.mp3"
 
-    Cave ->
-      "music/cave.mp3"
+    Chimes ->
+      "music/BG-Chimes.mp3"
+
+    Clarinet ->
+      "music/BG-Clarinet.mp3"
+
+    Drumset ->
+      "music/BG-Drumset.mp3"
+
+    Flute ->
+      "music/BG-Flute.mp3"
+
+    Oboe ->
+      "music/BG-Oboe.mp3"
+
+    Piano1 ->
+      "music/BG-Piano_1.mp3"
+
+    Piano2 ->
+      "music/BG-Piano_2.mp3"
+
+    SleighBells ->
+      "music/BG-Sleigh_Bells.mp3"
+
+    Tuba ->
+      "music/BG-Tuba.mp3"
+
+    Violin ->
+      "music/BG-Violin.mp3"
+
+    Violoncello ->
+      "music/BG-Violoncello.mp3"
+
 
 tracklist : List Track -> E.Value
 tracklist =
