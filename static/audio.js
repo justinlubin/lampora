@@ -4,6 +4,8 @@
 
 // Core Audio
 
+let minDuration = null;
+
 let buffers = {};
 let sources = {};
 let gainNodes = {};
@@ -29,6 +31,7 @@ function playSynced(path) {
   const source = audioCtx.createBufferSource();
   source.buffer = buffers[path];
   source.loop = true;
+  source.loopEnd = minDuration;
 
   const gainNode = audioCtx.createGain();
   source.connect(gainNode);
@@ -36,13 +39,18 @@ function playSynced(path) {
 
   gainNode.gain.setValueAtTime(1, audioCtx.currentTime);
 
-  currentOffset = audioCtx.currentTime % source.buffer.duration;
-
   if (firstOffset == null) {
-    source.start();
     firstOffset = audioCtx.currentTime;
+  }
+
+  currentOffset = audioCtx.currentTime % minDuration;
+
+  let offset = currentOffset - firstOffset;
+
+  if (offset < 0) {
+    source.start(0, 0);
   } else {
-    source.start(0, currentOffset - firstOffset);
+    source.start(0, offset);
   }
 
   sources[path] = source;
@@ -68,6 +76,11 @@ function init(allTracks) {
   Promise.all(allTracks.map(getMusic)).then(musics => {
     musics.forEach(music => {
       buffers[music.path] = music.buffer;
+
+      if (minDuration == null || music.buffer.duration < minDuration) {
+        minDuration = music.buffer.duration;
+      }
+
       console.log("done: " + music.path);
     });
     app.ports.audioToElm.send(msgLoaded);

@@ -22,7 +22,7 @@ player pos eid world =
             { x = pos.x
             , y = pos.y
             , width = 0.875
-            , height = 1.5
+            , height = 1.25
             }
             world.boundingBox
       , physics =
