@@ -47,11 +47,12 @@ update msg model =
                 Canvas.Draw
                   delta
                   newModel.game.world.renderables
-            , if
-                newModel.game.world.zone /= newModel.game.world.previousZone
-              then
+            , if newModel.game.world.musicNeedsUpdate then
                 Audio.send <|
-                  Audio.Set (Music.tracksFromZone newModel.game.world.zone)
+                  Audio.Set <|
+                    Music.tracks
+                      newModel.game.world.score
+                      newModel.game.world.zone
               else
                 Cmd.none
             ]

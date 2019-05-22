@@ -41,7 +41,7 @@ score model =
     [ Attr.id "score"
     ]
     [ Html.text <|
-        "Score: "
+        "Shards: "
           ++ String.fromInt model.game.world.score
           ++ "/"
           ++ String.fromInt model.game.world.winningScore

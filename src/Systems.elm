@@ -230,7 +230,12 @@ userCollision _ world =
         ( \eid _ worldAcc ->
             World.destruct
               eid
-              { world | score = world.score + 1 }
+              { worldAcc
+                  | score =
+                      worldAcc.score + 1
+                  , musicNeedsUpdate =
+                      True
+              }
         )
         world
         ( ECS.combine
@@ -292,35 +297,38 @@ input _ world =
 
 zone : ECS.FixedSystem World
 zone _ world =
-  { world
-      | previousZone =
-          world.zone
+  let
+    newZone =
+      case world.followedEntity of
+        Just eid ->
+          case ECS.get eid world.boundingBox of
+            Just bb ->
+              let
+                pos =
+                  Vector.map round
+                    { x = bb.x + bb.width / 2
+                    , y = bb.y + bb.height / 2
+                    }
+              in
+                case Tilemap.zone pos world.tilemap of
+                  Just z ->
+                    z
 
-      , zone =
-          case world.followedEntity of
-            Just eid ->
-              case ECS.get eid world.boundingBox of
-                Just bb ->
-                  let
-                    pos =
-                      Vector.map round
-                        { x = bb.x + bb.width / 2
-                        , y = bb.y + bb.height / 2
-                        }
-                  in
-                    case Tilemap.zone pos world.tilemap of
-                      Just z ->
-                        z
-
-                      Nothing ->
-                        world.zone
-
-                Nothing ->
-                  world.zone
+                  Nothing ->
+                    world.zone
 
             Nothing ->
               world.zone
-  }
+
+        Nothing ->
+          world.zone
+  in
+    { world
+        | zone =
+            newZone
+        , musicNeedsUpdate =
+            newZone /= world.zone
+    }
 
 --------------------------------------------------------------------------------
 -- Dynamic Systems

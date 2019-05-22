@@ -1,20 +1,43 @@
 module Music exposing
-  ( tracksFromZone
+  ( tracks
   )
 
 import Tilemap exposing (Zone(..))
 import Audio exposing (Track(..))
 
-tracksFromZone : Zone -> List Track
-tracksFromZone zone =
+levelFromScore : Int -> Int
+levelFromScore score =
+  score // 2
+
+tracks : Int -> Zone -> List Track
+tracks score zone =
   let
-    common =
+    level =
+      levelFromScore score
+
+    level0 =
       [ Oboe
       , Clarinet
       , Bassoon
       ]
 
-    extra =
+    level1 =
+      if level >= 1 then
+        [ Violin
+        , Violoncello
+        ]
+      else
+        []
+
+    level2 =
+      if level >= 2 then
+        [ Flute
+        , Drumset
+        ]
+      else
+        []
+
+    zoneBased =
       case zone of
         Outside ->
           [ Piano2
@@ -34,4 +57,4 @@ tracksFromZone zone =
         Unknown ->
           []
   in
-    common ++ extra
+    level0 ++ level1 ++ level2 ++ zoneBased

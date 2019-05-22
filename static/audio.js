@@ -4,6 +4,8 @@
 
 // Core Audio
 
+const MUSESCORE_EXTRA_LENGTH = 2;
+
 let minDuration = null;
 
 let buffers = {};
@@ -78,7 +80,7 @@ function init(allTracks) {
       buffers[music.path] = music.buffer;
 
       if (minDuration == null || music.buffer.duration < minDuration) {
-        minDuration = music.buffer.duration;
+        minDuration = music.buffer.duration - MUSESCORE_EXTRA_LENGTH;
       }
 
       console.log("done: " + music.path);
