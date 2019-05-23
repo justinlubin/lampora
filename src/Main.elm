@@ -176,7 +176,7 @@ init _ =
         False
     }
     -- Give JavaScript time to listen to the ports
-  , delay 50 Controller.Init
+  , delay 500 Controller.Init
   )
 
 main : Program Flags Model Msg
