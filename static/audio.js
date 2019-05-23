@@ -18,6 +18,7 @@ const audioCtx = new AudioContext();
 async function getMusic(path) {
   const response = await fetch(path);
   const arrayBuffer = await response.arrayBuffer();
+  console.log("loaded: " + path);
   const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
   return {
     path: path,
