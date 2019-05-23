@@ -1,5 +1,8 @@
 module Main exposing (main)
 
+import Process
+import Time
+import Task
 import Browser
 import Dict
 
@@ -22,6 +25,13 @@ import World exposing (World)
 import Systems
 import Entities
 import Level
+
+-- Inspired by:
+-- https://stackoverflow.com/questions/40599512/how-to-achieve-behavior-of-settimeout-in-elm
+delay : Float -> msg -> Cmd msg
+delay ms msg =
+  Process.sleep ms
+    |> Task.perform (\_ -> msg)
 
 type alias Flags =
   ()
@@ -165,14 +175,8 @@ init _ =
     , playing =
         False
     }
-  , Cmd.batch
-      [ Canvas.send <|
-          Canvas.Init
-            Params.screenWidth
-            Params.screenHeight
-      , Audio.send <|
-          Audio.Init (Music.tracks 0 initGame.world.zone)
-      ]
+    -- Give JavaScript time to listen to the ports
+  , delay 50 Controller.Init
   )
 
 main : Program Flags Model Msg

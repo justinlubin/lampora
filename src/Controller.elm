@@ -18,7 +18,8 @@ import Music
 import Tilemap exposing (Zone(..))
 
 type Msg
-  = Tick Float -- in milliseconds!
+  = Init
+  | Tick Float -- in milliseconds!
   | KeyDown String
   | KeyUp String
   | AudioLoaded
@@ -28,6 +29,21 @@ type Msg
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
+    Init ->
+      ( model
+      , Cmd.batch
+          [ Canvas.send <|
+              Canvas.Init
+                Params.screenWidth
+                Params.screenHeight
+          , Audio.send <|
+              Audio.Init <|
+                Music.tracks
+                  model.game.world.score
+                  model.game.world.zone
+          ]
+      )
+
     Tick deltaInMs ->
       let
         delta =
