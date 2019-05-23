@@ -2,6 +2,14 @@
 
 "use strict";
 
+// If at first you don't succeed, try, try again!
+let initialSuccess = false;
+window.setTimeout(function() {
+  if (!initialSuccess) {
+    location.reload();
+  }
+}, 1000);
+
 // Core Audio
 
 const MUSESCORE_EXTRA_LENGTH = 2;
@@ -17,8 +25,8 @@ const audioCtx = new AudioContext();
 
 async function getMusic(path) {
   const response = await fetch(path);
+  initialSuccess = true;
   const arrayBuffer = await response.arrayBuffer();
-  console.log("loaded: " + path);
   const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
   return {
     path: path,
@@ -96,8 +104,10 @@ function set(tracklist) {
 }
 
 app.ports.audioToJs.subscribe(function(data) {
-  let name = data.name;
-  let args = data.args;
+  const name = data.name;
+  const args = data.args;
+
+  console.log("audioToJs received: " + name);
 
   switch (name) {
     case "init":
