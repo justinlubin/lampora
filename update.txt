@@ -1,0 +1,216 @@
+--------------------------------------------------------------------------------
+-- BLURB
+--------------------------------------------------------------------------------
+
+My Elm project is a platformer game with two main features:
+
+  1. Difficult platforming
+  2. Cool modular music
+
+Turns out, there's a lot that goes into implementing those two features (and the
+game surrounding them)!
+
+--------------------------------------------------------------------------------
+-- INSTRUCTIONS FOR BUILDING AND RUNNING THE CODE
+--------------------------------------------------------------------------------
+
+To build the code, run:
+
+  make fast
+
+This will make the code (the "fast" is to enable Elm 0.19 optimizations).
+
+This command will create a directory called "out" in at root of the project.
+From this directory, run a local web server. For example:
+
+  php -S localhost:8000
+
+A web server is needed because the game attempts to "fetch" audio files from
+the server, which cannot be done with the local filesystem (security
+vulnerability).
+
+From here, navigate to "localhost" in the browser URL bar. Most likely, the game
+will work just fine! One of two bad things can happen (to my knowledge):
+
+  1. There's a blank screen.
+  2. The "Loading..." phase takes a really, really long time (like >30 seconds).
+
+In either of these cases, please try refreshing the page (may take multiple
+attempts). I'm *pretty* sure I fixed these bugs, but there were some weird
+asynchronous issues hooking into JavaScript from Elm.
+
+--------------------------------------------------------------------------------
+-- HOW TO PLAY
+--------------------------------------------------------------------------------
+
+Controls:
+
+    Action         Key
+ ------------ -------------
+  Move left    Left arrow
+  Move right   Right arrow
+  Jump         Z
+
+The goal of the game is to collect the six shards scattered throughout the
+world. If you can do so, you win! (Harder than it sounds.)
+
+--------------------------------------------------------------------------------
+-- SOME NOTABLE IMPLEMENTATION DETAILS
+--------------------------------------------------------------------------------
+
+# Entity-Component-System Architecture
+
+I implemented a fully-functional ECS architecture, inspired by mogee, an Elm
+game that can be found at https://unsoundscapes.itch.io/mogee. Briefly, there
+are three aspects to this architecture:
+
+  1. Entities, which are just numeric IDs
+  2. Components, which describe information about a particular entity (such as
+     (boundingBox, physics, userControl, appearance); any entity can have any
+     component, and there is no inheritance
+  3. Systems, which update the world every tick. Systems can either be "fixed"
+     (i.e. fixed-step), which are useful for precise computations like physics
+     collisions, or "dynamic", which are run as often as possible (which is
+     useful for rendering, for example)
+
+Drawing from the architecture behind mogee, this API is completely functional
+and nicely encapsulated in the file `src/ECS.elm`. I would be happy to reuse
+this mini-library in a future project! In particular, it's really quite fun and
+easy to add new systems, as they are really just like mini "update" functions;
+it's also really fun to see the effect of removing a system like gravity or
+collision detection, as all I need to do is simply remove the system from the
+list of systems added to the world in `src/Main.elm`!
+
+# Canvas-based rendering
+
+I implemented a mini rendering library that interfaces with the JavaScript
+Canvas API to allow for fast and precise rendering. I made the API purely
+functional, so every update conceptually sends the entire world over to
+JavaScript to render. However, I implemented a very useful optimization: only
+what is on the screen currently is sent to JavaScript to render. There are only
+ever a handful of game tiles and entities on the screen at once, so rendering
+performs quite smoothly, even with as huge a tilemap as I have for this game.
+
+One great benefit of having a functional API for drawing is that I can hook it
+very easily into the ECS framework described above: rendering is just a "dynamic
+system".
+
+# Modular music
+
+I implemented a modular music system in Elm that operates along two axes: player
+score and player location. I defined the music "level" to be the number of
+shards the player has divided by two (and floored). The following table
+summarizes the musical level modularity:
+
+  Level       New Instruments
+ ------- -------------------------
+      0   Oboe, Clarinet, Bassoon
+      1   Violin, Cello
+      2   Flute, Drums
+
+Moreover, depending on where the player is in the gameworld, various instruments
+will drop in and out, as summarized in the following table:
+
+        Location                   Instruments
+ ---------------------- ----------------------------------
+  Outside                Low Piano
+  Cave/Inside Mountain   Low Piano, Tuba
+  Top of Mountain        High Piano, Sleigh Bells, Chimes
+
+To implement these features, I had to hook into the JavaScript WebAudio API,
+because Elm does not have native bindings for these features. The WebAudio API
+turned out to be very complicated, but very powerful. I was very grateful for
+the level of precision it gave me, as each instrument outlined above is in its
+own, independent audio file, so I needed a way to synchronize many audio tracks
+at once with perfect precision. The flexibility of having each instrument in
+the track allows me to control each instrumental line independently from the
+code, so I could do things like panning, mixing volume levels, and cross-fading
+in the future, should I choose to do so.
+
+--------------------------------------------------------------------------------
+-- GOALS ACHIEVED
+--------------------------------------------------------------------------------
+
+In this section, I will go through my original plan of attack verbatim and
+describe the status of each item.
+
+"Necessary" steps:
+
+  1. Choose drawing library for Elm / understand Canvas API for Elm
+       => DONE!
+
+  2. Get basic player character drawing / input working
+       => DONE!
+
+  3. Implement collision detection
+       => DONE!
+
+"Extra" steps:
+
+  - Implement enemies (with simple AI)
+      => CANCELLED! I think the game is hard enough as-is, and I think that
+         adding enemies (even with simple AI) would be out of the scope of
+         the time that I have remaining for this project.
+
+  - Create media: draw tileset / character graphics for game and compose music
+      => DONE (MOSTLY)! I composed the entire score for the game myself (about
+          1.5 minutes of music), and selected the instrumentation for each
+          zone/level of music. Graphically, I decided to go with a minimalistic
+          "blocky" aesthetic, mostly for the sake of time.
+
+  - Implement modular music by hooking into JavaScript
+      => DONE!
+
+  - Implement level-based system (or decide to go with open-world system)
+      => DONE! I decided to go with an open-world system.
+
+      - Will require localStorage for save states
+          => CANCELLED! The game is small enough that save states aren't needed.
+
+  - Have title / menu / pause screens (different states for the UI)
+      => DONE!
+
+  - Add in simple dialogue boxes for NPCs
+      => CANCELLED! Although I suspect they would not be particularly
+         technically demanding (as, for example, enemies might be), I decided
+         not to add NPCs to the game because I don't think they are necessary
+         for the game to show off its main fun features (difficult platforming
+         and cool modular music).
+
+--------------------------------------------------------------------------------
+-- WHAT'S LEFT TO DO
+--------------------------------------------------------------------------------
+
+There are still a couple things that I would like to get done before I submit
+the final version of the project.
+
+Necessary:
+
+  1. Name the game!
+  2. There are some audio issues related to the mixing of the tracks that I need
+     to work out. In particular, the sleigh bells are really, really loud! I
+     should be able to just edit the audio files in Audacity, but I may do an
+     Elm-based solution that also sends the volume level for each track to the
+     JavaScript interface that I made.
+  3. Fix sound looping. The modular music works almost perfectly, but there are
+     some small issues related to looping tracks that briefly offset the music
+     incorrectly on each loop.
+
+Desirable:
+
+  4. Add sound effects: one for the player jumping, and one for collecting a
+     shard.
+  5. Add a winning fanfare to be played at the end of the game.
+  6. Add "positional audio" for the shards: when a player is close to a shard,
+     there should be a sonic indicator of some sort (possibly something tinkly
+     or shiny sounding). The closer the player is to the shard, the louder
+     the music should play.
+
+Extras (truly stretch goals; pretty unrealistic chance of happening, but always
+good to have more to do):
+
+  7. Graphics
+  8. Animation
+  9. Enemies, player health, lasers
+  A. Improved HTML / CSS styling (I'd love to make the page look like an old
+     arcade box)
