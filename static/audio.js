@@ -4,7 +4,7 @@
 
 // Core Audio
 
-const MUSESCORE_EXTRA_LENGTH = 2.2;
+const MUSESCORE_EXTRA_LENGTH = 2.31; // empirical
 const FADE_TIME = 0;
 
 let minDuration = null;
