@@ -45,7 +45,7 @@ shard pos eid world =
   { world
       | appearance =
           ECS.add eid
-            { color = "blue" }
+            { color = "#f7d65d" }
             world.appearance
       , boundingBox =
           ECS.add eid

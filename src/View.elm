@@ -35,17 +35,35 @@ zoneString z =
     Unknown ->
       "Unknown"
 
+title : Html Msg
+title =
+  Html.h1
+    [ Attr.id "main-title"
+    ]
+    [ Html.text "The Shards of Mt. Lampora"
+    ]
+
 score : Model -> Html Msg
 score model =
-  Html.div
-    [ Attr.id "score"
-    ]
-    [ Html.text <|
-        "Shards: "
-          ++ String.fromInt model.game.world.score
-          ++ "/"
-          ++ String.fromInt model.game.world.winningScore
-    ]
+  let
+    shard class =
+      Html.div
+        [ Attr.class <|
+            "shard " ++ class
+        ]
+        []
+  in
+    Html.div
+      [ Attr.id "score"
+      ] <|
+      ( List.map
+        (\_ -> shard "obtained")
+        (List.range 1 model.game.world.score)
+      ) ++
+      ( List.map
+        (\_ -> shard "remaining")
+        (List.range (model.game.world.score + 1) model.game.world.winningScore)
+      )
 
 screen : Model -> Html Msg
 screen model =
@@ -83,7 +101,7 @@ playButton model =
     loaded =
       Model.loaded model
   in
-    Html.button
+    Html.div
       ( [ Attr.id "play-button"
         ] ++
         ( if model.playing then
@@ -93,7 +111,7 @@ playButton model =
             [ Events.onClick PlayClicked
             ]
           else
-            [ Attr.disabled True
+            [ Attr.class "disabled"
             ]
         )
       )
@@ -110,7 +128,8 @@ view model =
   Html.div
     [ Attr.id "arcade"
     ]
-    [ score model
+    [ title
+    , score model
     , screen model
     , playButton model
     ]

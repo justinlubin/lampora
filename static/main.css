@@ -14,7 +14,9 @@ body {
   justify-content: center;
   align-items: center;
 
-  font-family: sans-serif;
+  background-color: #222222;
+  color: #EEEEEE;
+  font-family: "Arima Madurai", sans-serif;
 }
 
 .hidden {
@@ -27,7 +29,8 @@ body {
 }
 
 #screen {
-  border: 10px solid gray;
+  background-color: #333333;
+  border: 10px solid #444444;
   position: relative;
 }
 
@@ -57,6 +60,41 @@ body {
 }
 
 #play-button {
-  padding: 10px 20px;
+  cursor: pointer;
+  background: #282828;
   text-align: center;
+  border: 1px solid #444444;
+  margin-top: 10px;
+  padding: 10px 20px;
+}
+
+#play-button.disabled {
+  cursor: default;
+  color: #888888;
+}
+
+#score {
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.shard {
+  width: 10px;
+  height: 10px;
+}
+
+.shard.obtained {
+  background-color: #f7d65d;
+  border: 1px solid #444444;
+}
+
+.shard.remaining {
+  border: 1px dotted #444444;
+}
+
+#main-title {
+  text-align: center;
+  font-size: 2.3em;
+  font-weight: bold;
 }
