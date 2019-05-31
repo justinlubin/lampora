@@ -4,7 +4,8 @@
 
 // Core Audio
 
-const MUSESCORE_EXTRA_LENGTH = 2;
+const MUSESCORE_EXTRA_LENGTH = 2.2;
+const FADE_TIME = 0;
 
 let minDuration = null;
 
@@ -26,10 +27,12 @@ async function getMusic(path) {
 }
 
 let firstOffset = null;
-let currentOffset = 0;
-
-const fadeTime = 0;
 function playSynced(path) {
+  if (firstOffset == null) {
+    firstOffset = audioCtx.currentTime;
+  }
+  const offset = (audioCtx.currentTime - firstOffset) % minDuration;
+
   const source = audioCtx.createBufferSource();
   source.buffer = buffers[path];
   source.loop = true;
@@ -41,13 +44,6 @@ function playSynced(path) {
 
   gainNode.gain.setValueAtTime(1, audioCtx.currentTime);
 
-  if (firstOffset == null) {
-    firstOffset = audioCtx.currentTime;
-  }
-
-  currentOffset = audioCtx.currentTime % minDuration;
-
-  let offset = currentOffset - firstOffset;
 
   if (offset < 0) {
     source.start(0, 0);
@@ -63,7 +59,7 @@ function playSynced(path) {
 
 function stop(path) {
   if (sources[path]) {
-    sources[path].stop(audioCtx.currentTime + fadeTime);
+    sources[path].stop(audioCtx.currentTime + FADE_TIME);
 
     sources[path] = null;
     gainNodes[path] = null;
