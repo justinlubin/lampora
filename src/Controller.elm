@@ -13,6 +13,7 @@ import ECS
 import Params
 import Model exposing (Model)
 import Draw.Canvas as Canvas
+import Sfx
 import Audio
 import Music
 import Tilemap exposing (Zone(..))
@@ -36,11 +37,8 @@ update msg model =
               Canvas.Init
                 Params.screenWidth
                 Params.screenHeight
-          , Audio.send <|
-              Audio.Init <|
-                Music.tracks
-                  model.game.world.score
-                  model.game.world.zone
+          , Audio.send Audio.Init
+          , Sfx.send Sfx.Init
           ]
       )
 
@@ -56,9 +54,42 @@ update msg model =
                     |> ECS.simulateFixed delta
                     |> ECS.simulateDynamic
           }
+
+        -- SFX Hooks
+        sfxs =
+          let
+            grounded : Model -> Bool
+            grounded m =
+              m.game.world.followedEntity
+                |> Maybe.andThen (\e -> ECS.get e m.game.world.physics)
+                |> Maybe.map (.grounded)
+                |> Maybe.withDefault True
+
+            score : Model -> Int
+            score m =
+              m.game.world.score
+
+            (beforeGrounded, nowGrounded) =
+              (grounded model, grounded newModel)
+
+            (beforeScore, nowScore) =
+              (score model, score newModel)
+          in
+            ( if not nowGrounded && beforeGrounded then
+                [ Sfx.Jump
+                ]
+              else
+                []
+            ) ++
+            ( if nowScore > beforeScore then
+                [ Sfx.Shard
+                ]
+              else
+                []
+            )
       in
         ( newModel
-        , Cmd.batch
+        , Cmd.batch <|
             [ Canvas.send <|
                 Canvas.Draw
                   delta
@@ -71,7 +102,9 @@ update msg model =
                       newModel.game.world.zone
               else
                 Cmd.none
-            ]
+            ] ++
+            ( List.map (Sfx.send << Sfx.Play) sfxs
+            )
         )
 
     KeyDown s ->

@@ -11,8 +11,6 @@ import View
 import Controller exposing (Msg)
 
 import Draw.Canvas as Canvas
-import Audio
-import Music
 
 import KeyManager
 

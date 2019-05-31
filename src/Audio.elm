@@ -89,18 +89,17 @@ tracklist =
   List.map trackPath >> E.list E.string
 
 type JsMsg
-  = Init (List Track)
+  = Init
   | Set (List Track)
 
 send : JsMsg -> Cmd msg
-send canvasMsg =
+send audioMsg =
   let
     (name, args) =
-      case canvasMsg of
-        Init startingTracklist ->
+      case audioMsg of
+        Init ->
           ( "init"
           , [ ("allTracks", tracklist allTracks)
-            , ("startingTracklist", tracklist startingTracklist)
             ]
           )
 
