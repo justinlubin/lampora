@@ -39,7 +39,7 @@ thinSky : Tile
 thinSky =
   { name = "Thin Sky"
   , blocked = False
-  , color = "#446be2"
+  , color = "#A1C9E3"
   , zone = Just Winter
   }
 
