@@ -98,3 +98,38 @@ body {
   font-size: 2.3em;
   font-weight: bold;
 }
+
+#credits {
+  width: 350px;
+
+  background-color: #282828;
+  text-align: center;
+
+  border: 1px solid #444444;
+  border-bottom: none;
+
+  position: absolute;
+  bottom: 0;
+  right: 30px;
+}
+
+#credits-title {
+  font-size: 1em;
+  font-weight: normal;
+}
+
+#credits-content {
+  display: none;
+  text-align: left;
+  padding: 10px;
+  border-top: 1px dotted #444444;
+  box-sizing: border-box;
+}
+
+#credits:hover > #credits-content {
+  display: block;
+}
+
+#credits-content a {
+  color: inherit;
+}
