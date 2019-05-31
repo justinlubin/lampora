@@ -65,6 +65,13 @@ update msg model =
                 |> Maybe.map (.grounded)
                 |> Maybe.withDefault True
 
+            yVel : Model -> Float
+            yVel m =
+              m.game.world.followedEntity
+                |> Maybe.andThen (\e -> ECS.get e m.game.world.physics)
+                |> Maybe.map (.velocity >> .y)
+                |> Maybe.withDefault 0
+
             score : Model -> Int
             score m =
               m.game.world.score
@@ -72,10 +79,13 @@ update msg model =
             (beforeGrounded, nowGrounded) =
               (grounded model, grounded newModel)
 
+            nowYVel =
+              yVel newModel
+
             (beforeScore, nowScore) =
               (score model, score newModel)
           in
-            ( if not nowGrounded && beforeGrounded then
+            ( if not nowGrounded && beforeGrounded && nowYVel < 0 then
                 [ Sfx.Jump
                 ]
               else
