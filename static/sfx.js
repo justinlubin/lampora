@@ -6,9 +6,6 @@
 
 let buffers = {};
 
-const AudioContext = window.AudioContext || window.webkitAudioContext;
-const audioCtx = new AudioContext();
-
 async function getMusic(path) {
   const response = await fetch(path);
   const arrayBuffer = await response.arrayBuffer();
@@ -20,9 +17,12 @@ async function getMusic(path) {
 }
 
 function play(path) {
+  console.log(buffers);
+  console.log(path);
   if (buffers[path]) {
     const source = audioCtx.createBufferSource();
     source.buffer = buffers[path];
+    source.connect(audioCtx.destination);
     source.start(0, 0);
   }
 }
@@ -33,6 +33,7 @@ function init(allSfx) {
   Promise.all(allSfx.map(getMusic)).then(musics => {
     musics.forEach(music => {
       buffers[music.path] = music.buffer;
+      console.log("done: " + music.path);
     });
   });
 }
@@ -49,7 +50,7 @@ app.ports.sfxToJs.subscribe(function(data) {
 
   switch (name) {
     case "init":
-      init();
+      init(args.allSfx);
       break;
     case "play":
       playSfx(args.sfx);

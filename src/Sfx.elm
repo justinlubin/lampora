@@ -9,6 +9,9 @@ import Json.Decode as D
 
 import Params
 
+-- Note: only uses outgoing ports because loading all the sfx is *much* faster
+-- than loading all the background music.
+
 port sfxToJs : E.Value -> Cmd msg
 
 type Sfx
@@ -25,10 +28,10 @@ sfxPath : Sfx -> String
 sfxPath sfx =
   case sfx of
     Jump ->
-      "sfx/jump.wav"
+      "sfx/jump.mp3"
 
     Shard ->
-      "sfx/shard.wav"
+      "sfx/shard.mp3"
 
 sfxList : List Sfx -> E.Value
 sfxList =

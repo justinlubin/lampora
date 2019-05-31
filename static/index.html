@@ -13,6 +13,9 @@
     <script src="main.js"></script>
 
     <script>
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      const audioCtx = new AudioContext();
+
       let app =
         Elm.Main.init({
           node: document.getElementById("elm")

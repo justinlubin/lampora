@@ -13,9 +13,6 @@ let buffers = {};
 let sources = {};
 let gainNodes = {};
 
-const AudioContext = window.AudioContext || window.webkitAudioContext;
-const audioCtx = new AudioContext();
-
 async function getMusic(path) {
   const response = await fetch(path);
   const arrayBuffer = await response.arrayBuffer();
