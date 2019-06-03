@@ -10,7 +10,7 @@ music. In doing so, I implemented the following:
 - Collision detection
 - Audio interface with JavaScript
     - Modular/dynamic music system
-    - Sound effects
+    - Sound effects (jump sound, shard collection sound)
     - Asynchronous loading of music files
 - Entity-component-system (ECS) architecture
 - Pretty (enough) webpage surrounding the game
