@@ -1,0 +1,162 @@
+--------------------------------------------------------------------------------
+-- ACCOMPLISHMENTS
+--------------------------------------------------------------------------------
+
+I accomplished my goal of creating a game featuring various types of modular
+music. In doing so, I implemented the following:
+
+- Fast (enough) graphical rendering
+- Physics system (gravity, etc.)
+- Collision detection
+- Audio interface with JavaScript
+    - Modular/dynamic music system
+    - Sound effects
+    - Asynchronous loading of music files
+- Entity-component-system (ECS) architecture
+- Pretty (enough) webpage surrounding the game
+
+I spent the longest amount of time on two of these tasks: (1) the ECS
+architecture, and (2) the modular music. As I will discuss below, the first of
+these was a joy to work with, but the second was... rather difficult (not
+because of Elm per se, but because of JavaScript).
+
+--------------------------------------------------------------------------------
+-- REFLECTION
+--------------------------------------------------------------------------------
+
+# Joys
+
+## ECS Architecture
+
+The ECS architecture that I implemented and used for my game was, by far, the
+most enjoyable aspect of the project to work with. In my opinion, I think that
+the architecture is quite elegant, but I don't have myself to credit for that:
+the ECS architecture is a well-known pattern for game development, and I drew
+great inspiration (but did not follow exactly) the work of Andrey Kuzmin on his
+Elm game "mogee" (https://github.com/w0rm/elm-mogee/tree/master/src).
+
+I described the three aspects of this architecture in my update.txt file, which
+I reproduce here for ease of reading:
+
+>  1. Entities, which are just numeric IDs
+>  2. Components, which describe information about a particular entity (such as
+>     (boundingBox, physics, userControl, appearance); any entity can have any
+>     component, and there is no inheritance
+>  3. Systems, which update the world every tick. Systems can either be "fixed"
+>     (i.e. fixed-step), which are useful for precise computations like physics
+>     collisions, or "dynamic", which are run as often as possible (which is
+>     useful for rendering, for example)
+
+In particular, I'd like to focus on the "systems" part of the architecture, as
+I think that is where Elm really shines. In my ECS implementation, I have the
+following two definitions for systems:
+
+  type alias FixedSystem world =
+    Delta -> world -> world
+
+  type alias DynamicSystem world =
+    world -> world
+
+In other words, systems are just functions! The "world" type parameter in this
+case can be instantiated with whatever the user wants the "world" to be---in the
+standard use-case, a record containing all the state necessary to describe the
+gameworld. Then, a "game" is just the following:
+
+  type alias Game w =
+    { uId : UId
+
+    , fixedSystems : List (FixedSystem w)
+    , dynamicSystems : List (DynamicSystem w)
+    , unsimulatedTime : Delta
+    , fixedTimestep : Delta
+
+    , world : w
+    }
+
+The user can now just create a list of systems (i.e., functions) without having
+to worry about keeping track of simulating time or other low-level details; it's
+all encapsulated in the game type.
+
+Using this approach, I created the following systems:
+
+- Fixed
+    - Gravity
+    - Movement
+    - Tilemap collision
+    - User collision (for item collection)
+    - User input (arguably should be dynamic, but works fine as fixed)
+    - Zone detection (outside/cave/mountaintop; for modular music)
+- Dynamic
+    - Rendering
+
+I didn't have to modify the game architecture at all when creating these
+functions; it allowed me to focus entirely on what each system had to achieve,
+and nothing more. Because each system is really just a function, all the code I
+needed to implement these features constitutes functional programming in the
+truest sense!
+
+## Types + general functional programming
+
+In addition to the specific example I cited above, Elm was just an absolute joy
+to work with for web development. The compiler was immensely helpful, and types
+made refactoring a breeze. I shudder at the very thought of implementing this
+project in 100% pure JavaScript; static types have truly become an
+indispensable asset to me.
+
+I also found that the functional style encourages code that expresses programmer
+intent incredibly well. This is certainly subjective, but I find functional
+code to be much easier to look at and understand what the "core" of the problem
+is that it is trying to solve while ignoring the unimportant details.
+
+# Sorrows
+
+## JavaScript
+
+The most painful part of this project was undoubtedly working with JavaScript.
+Truly, it was my least favorite part. The dynamic types and runtime errors were
+especially painful juxtaposed with the amazing guarantees that Elm provides.
+
+Luckily, I only had to use JavaScript for 3 things:
+
+1. Rendering to the canvas
+2. Sound effects
+3. Modular music
+
+The first two of these were actually not so bad: I completed the relevant
+JavaScript code in under an hour each. However, I spent many, *many* hours
+getting the modular music system to work flawlessly. The relevant JavaScript
+file is under 100 lines of actual code, but *getting to* that point was very
+difficult. The WebAudio API is absolutely amazing in what it allows programmers
+to do nowadays, but I found the API to be very difficult to understand and
+finicky with its inputs (a type system would have helped a lot here). Moreover,
+each track I included had to be perfectly synchronized with each other track so
+that they could be layered one atop the other, but actually doing so in code
+proved to be slightly tricky.
+
+Again, though, for what it is (a really low-level API in a dynamically-typed
+language), the WebAudio API is absolutely incredible! This project would not
+have been possible without it.
+
+--------------------------------------------------------------------------------
+-- CONCLUSIONS
+--------------------------------------------------------------------------------
+
+In the end, I'm not sure if I would develop another resource-intensive game in
+Elm or not. My game (which is somewhat resource-intensive, but relatively
+simple) ran quite smoothly most of the time, but I felt like I noticed a bit of
+lag here and there that makes me worry about what would happen in a much more
+complex game. I *definitely* prefer functional game programming to imperative
+game programming, however, and I would love to explore game development in a
+fast, functional, systems language like Rust, where performance is easier to
+reason about. The skills I learned in this class definitely helped me reason
+about performance in my game, however, so that helped a great deal!
+
+All told, I had a really good experience working with Elm for this project. I
+do not regret using Elm or choosing the project that I did. I really find it
+quite exciting to play the game in its final state, especially hearing the
+music that I composed come to life dynamically. It's very rewarding!
+
+
+                          Thanks for a great class!
+
+                                                                    Justin Lubin
