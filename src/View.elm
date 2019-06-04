@@ -112,12 +112,18 @@ credits =
     [ Html.h2
         [ Attr.id "credits-title"
         ]
-        [ Html.text "Credits"
+        [ Html.text "Controls & Credits"
         ]
     , Html.div
         [ Attr.id "credits-content"
         ]
-        [ Html.text "Design, programming, music: "
+        [ Html.i
+            []
+            [ Html.text "Left/right arrow keys + Z to jump!"
+            ]
+
+        , Html.br [] []
+        , Html.text "Design, programming, music: "
         , Html.a
             [ Attr.href "http://jlubin.net"
             ]
