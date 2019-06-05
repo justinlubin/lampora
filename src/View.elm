@@ -16,25 +16,6 @@ import World
 
 import Params
 
-empty : Html msg
-empty =
-  Html.text ""
-
-zoneString : Zone -> String
-zoneString z =
-  case z of
-    Outside ->
-      "Outside"
-
-    Winter ->
-      "Winter"
-
-    Cave ->
-      "Cave"
-
-    Unknown ->
-      "Unknown"
-
 title : Html Msg
 title =
   Html.h1
@@ -123,6 +104,66 @@ playButton model =
           ]
       )
 
+credits : Html Msg
+credits =
+  Html.div
+    [ Attr.id "credits"
+    ]
+    [ Html.h2
+        [ Attr.id "credits-title"
+        ]
+        [ Html.text "Controls & Credits"
+        ]
+    , Html.div
+        [ Attr.id "credits-content"
+        ]
+        [ Html.i
+            []
+            [ Html.text "Left/right arrow keys + Z to jump!"
+            ]
+
+        , Html.br [] []
+        , Html.text "Design, programming, music: "
+        , Html.a
+            [ Attr.href "http://jlubin.net"
+            ]
+            [ Html.text "Justin Lubin"
+            ]
+
+        , Html.br [] []
+        , Html.text "Programming language: "
+        , Html.a
+            [ Attr.href "https://elm-lang.org/"
+            ]
+            [ Html.text "Elm"
+            ]
+
+        , Html.br [] []
+        , Html.text "Level editor: "
+        , Html.a
+            [ Attr.href "https://www.mapeditor.org/"
+            ]
+            [ Html.text "Tiled"
+            ]
+
+        , Html.br [] []
+        , Html.text "Music software: "
+        , Html.a
+            [ Attr.href "https://musescore.org"
+            ]
+            [ Html.text "MuseScore"
+            ]
+
+        , Html.br [] []
+        , Html.text "Sound effect software: "
+        , Html.a
+            [ Attr.href "https://sfbgames.com/chiptone/"
+            ]
+            [ Html.text "ChipTone"
+            ]
+        ]
+    ]
+
 view : Model -> Html Msg
 view model =
   Html.div
@@ -132,4 +173,5 @@ view model =
     , score model
     , screen model
     , playButton model
+    , credits
     ]
