@@ -7,7 +7,7 @@ fast:
 	cp -a static/. out # Source: https://askubuntu.com/a/86891
 
 publish:
-	make fast && git checkout gh-pages && ./move.sh && \
+	make fast && git checkout gh-pages && ./copy.sh && \
 		git add -A && git commit -m "Pull updates from 'main'" && git push && \
 		git checkout master
 
